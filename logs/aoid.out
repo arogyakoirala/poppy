@@ -1,0 +1,156 @@
+/home/arogya/.local/lib/python3.9/site-packages/geopandas/_compat.py:111: UserWarning: The Shapely GEOS version (3.10.2-CAPI-1.16.0) is incompatible with the GEOS version PyGEOS was compiled with (3.10.1-CAPI-1.16.0). Conversions between both will be slow.
+  warnings.warn(
+*** Earth Engine *** FINAL DEADLINE: ee.Authenticate will fail after 2022-06-06. Please upgrade. https://developers.google.com/earth-engine/guides/python_install
+--- Generating grids...
+--------- Generating grid at 2500mx2500m ...
+--------- Grid generation complete. Saving to disk...
+--------- Successfully saved to disk: ../data/interim/parent.gpkg
+--------- Generating grid at 250mx250m ...
+--------- Grid generation complete. Saving to disk...
+--------- Successfully saved to disk: ../data/interim/child.gpkg
+--------- Generating grid at 25000mx25000m ...
+--------- Grid generation complete. Saving to disk...
+--------- Successfully saved to disk: ../data/interim/parent_best_dates.gpkg
+#### Grid Gen Complete in 1.7427034378051758 ####
+--- Backfilling dates..
+Done with MODIS best date calculation.. - 0.3401520252227783 sec
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/9ac4e60a2d41e7c9e5e3f2c3ad10541c-44ba1beb5e173dc6f9dced1d2edf880c:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/0.tif
+Downloaded tiles.. - 1.1121604442596436 sec
+0...10...20...30...40...50...60...70...80...90...100 - done.
+0...10...20...30...40...50...60...70...80...90...100 - done.
+Merged tiles.. - 1.7869641780853271 sec
+Shell GDF created.. - 1.8121240139007568 sec
+0...10...20...30...40...50...60...70...80...90...100 - done.
+Polygonized shell.. - 66.30937075614929 sec
+0...10...20...30...40...50...60...70...80...90...Creating output ../data/interim/merged.gpkg of format GPKG.
+100 - done.
+Polygonized merged.. - 70.59529972076416 sec
+Created Centroids.. - 73.13326907157898 sec
+Saved child GDF. Completed! - 99.31550073623657 sec
+#### Backfill Complete in 99.3824679851532 ####
+--- Downloading images.. | Post Period days - 30 to 45 days
+Generating URL ...
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/9fa70fbd348f4a363fb8680190b070cd-fee317827b0d5d44b11dbd37ea9fdae7:getPixels
+Please wait ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/f264e87ae6db236a31eb2271ca65b08a-633585941e7a704c2c797a3614941bb8:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/35.tif
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/0.tif
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/5aa1c0adfaa0cc1e3245aa254570cedd-24cd4af466ae04388bc6f4d5ece1aee8:getPixels
+Please wait ...
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/8b94b9af8c9d889454e8f5cd0b569301-3a32065b29eafcbaeaf244e479595c8c:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/1.tif
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/20741abeb9be034937f00c874c703422-8badfdd93840dee5b75dc43b5089543b:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/36.tif
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/fca4d8343ad4af252b1a3d25e6d89707-029d5c641d480ed6e97c9e1703ac303f:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/2.tif
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/f7a64aa163cac7c07b39fdfc4ff7d061-cc9f238b4c4400290c9c00d89397b3cf:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/37.tif
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/3.tif
+Generating URL ...
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/0de30ce338b4efc04a87d6951a781b18-1be6fe02a8dfc3c3442a757cbbba6917:getPixels
+Please wait ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/7eeefb511a71925b059f6d4745f63067-9528e0ff7596d50154d0c63912d3bcdf:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/4.tif
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 1377, in getresponse
+    response.begin()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 320, in begin
+    version, status, reason = self._read_status()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 289, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/arogya/projects/afg-clustering/src/utils/rasters.py", line 229, in _get_rasters_for_chunk
+    if len(combined.bandNames().getInfo()) > 13:
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/computedobject.py", line 98, in getInfo
+    return data.computeValue(self)
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/data.py", line 730, in computeValue
+    return _execute_cloud_call(
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/data.py", line 330, in _execute_cloud_call
+    return call.execute(num_retries=num_retries)
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/_helpers.py", line 134, in positional_wrapper
+    return wrapped(*args, **kwargs)
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/http.py", line 900, in execute
+    resp, content = _retry_request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/http.py", line 177, in _retry_request
+    resp, content = http.request(uri, method, *args, **kwargs)
+  File "/home/arogya/.local/lib/python3.9/site-packages/google_auth_httplib2.py", line 218, in request
+    response, content = self.http.request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2/__init__.py", line 1701, in request
+    (response, content) = self._request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2/__init__.py", line 1421, in _request
+    (response, content) = self._conn_request(conn, request_uri, method, body, headers)
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2shim/__init__.py", line 154, in _conn_request
+    raise _map_exception(e)
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2shim/__init__.py", line 140, in _conn_request
+    urllib3_response = self.pool.request(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/request.py", line 78, in request
+    return self.request_encode_body(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/request.py", line 170, in request_encode_body
+    return self.urlopen(method, url, **extra_kw)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/poolmanager.py", line 376, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 785, in urlopen
+    retries = retries.increment(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/util/retry.py", line 525, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/packages/six.py", line 769, in reraise
+    raise value.with_traceback(tb)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 1377, in getresponse
+    response.begin()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 320, in begin
+    version, status, reason = self._read_status()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 289, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/arogya/projects/afg-clustering/src/poppy-preprocess.py", line 124, in <module>
+    rgh.get_rasters()
+  File "/home/arogya/projects/afg-clustering/src/utils/rasters.py", line 191, in get_rasters
+    chunk_results = [chunk.get() for chunk in chunk_processes]
+  File "/home/arogya/projects/afg-clustering/src/utils/rasters.py", line 191, in <listcomp>
+    chunk_results = [chunk.get() for chunk in chunk_processes]
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/multiprocessing/pool.py", line 771, in get
+    raise self._value
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))

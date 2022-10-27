@@ -1,0 +1,207 @@
+/home/arogya/.local/lib/python3.9/site-packages/geopandas/_compat.py:111: UserWarning: The Shapely GEOS version (3.10.2-CAPI-1.16.0) is incompatible with the GEOS version PyGEOS was compiled with (3.10.1-CAPI-1.16.0). Conversions between both will be slow.
+  warnings.warn(
+*** Earth Engine *** FINAL DEADLINE: ee.Authenticate will fail after 2022-06-06. Please upgrade. https://developers.google.com/earth-engine/guides/python_install
+--- Generating grids...
+--------- Generating grid at 2500mx2500m ...
+--------- Grid generation complete. Saving to disk...
+--------- Successfully saved to disk: ../data/interim/parent.gpkg
+--------- Generating grid at 250mx250m ...
+--------- Grid generation complete. Saving to disk...
+--------- Successfully saved to disk: ../data/interim/child.gpkg
+--------- Generating grid at 25000mx25000m ...
+--------- Grid generation complete. Saving to disk...
+--------- Successfully saved to disk: ../data/interim/parent_best_dates.gpkg
+#### Grid Gen Complete in 1.7317829132080078 ####
+--- Backfilling dates..
+Done with MODIS best date calculation.. - 0.32918214797973633 sec
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/9ac4e60a2d41e7c9e5e3f2c3ad10541c-8d276df2b4cbae43dd6226c77d82dd1d:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/0.tif
+Downloaded tiles.. - 3.28322434425354 sec
+0...Warning 1: ../data/interim/tiles/1.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/1.tif
+10.Warning 1: ../data/interim/tiles/20.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/20.tif
+.Warning 1: ../data/interim/tiles/21.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/21.tif
+.20Warning 1: ../data/interim/tiles/22.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/22.tif
+..Warning 1: ../data/interim/tiles/23.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/23.tif
+.30Warning 1: ../data/interim/tiles/24.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/24.tif
+.Warning 1: ../data/interim/tiles/25.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/25.tif
+..Warning 1: ../data/interim/tiles/26.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/26.tif
+40.Warning 1: ../data/interim/tiles/27.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/27.tif
+..Warning 1: ../data/interim/tiles/28.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/28.tif
+50Warning 1: ../data/interim/tiles/2.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/2.tif
+..Warning 1: ../data/interim/tiles/3.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/3.tif
+.60Warning 1: ../data/interim/tiles/44.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/44.tif
+..Warning 1: ../data/interim/tiles/45.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/45.tif
+.Warning 1: ../data/interim/tiles/46.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/46.tif
+70.Warning 1: ../data/interim/tiles/47.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/47.tif
+..Warning 1: ../data/interim/tiles/4.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/4.tif
+80.Warning 1: ../data/interim/tiles/5.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/5.tif
+.Warning 1: ../data/interim/tiles/6.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/6.tif
+.90Warning 1: ../data/interim/tiles/7.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/7.tif
+..Warning 1: ../data/interim/tiles/8.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/8.tif
+Warning 1: ../data/interim/tiles/9.tif: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: TIFFReadDirectory:Sum of Photometric type-related color channels and ExtraSamples doesn't match SamplesPerPixel. Defining non-color channels as ExtraSamples.
+Warning 1: gdalbuildvrt does not support heterogeneous band numbers: expected 1, got 26. Skipping ../data/interim/tiles/9.tif
+.100 - done.
+0...10...20...30...40...50...60...70...80...90...100 - done.
+Merged tiles.. - 4.019023656845093 sec
+Shell GDF created.. - 4.043186664581299 sec
+0...10...20...30...40...50...60...70...80...90...100 - done.
+Polygonized shell.. - 72.96195125579834 sec
+0...10...20...30...40...50...60...70...80...90...Creating output ../data/interim/merged.gpkg of format GPKG.
+100 - done.
+Polygonized merged.. - 77.43639016151428 sec
+Created Centroids.. - 79.894291639328 sec
+Saved child GDF. Completed! - 97.82835078239441 sec
+#### Backfill Complete in 97.898921251297 ####
+--- Downloading images.. | Post Period days - 30 to 45 days
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/671478163c7b83d6bf0be4c49eed2a43-af471d6e4007fe2b7bcbcc224ffeb989:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/0.tif
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/6e852d18dc6593b92656ae261633a830-a869a1fee3a5e24ea687d56509e3a780:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/1.tif
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/2044e43eb8a7ccfb31872b2ce58e9f35-02a1aa17e63a981e4722c7ea07c72591:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/2.tif
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/1d9bcc87bae82263043db748c1ed7da3-31f401802134d5b0773f8597de92fd84:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/3.tif
+Generating URL ...
+Downloading data from https://earthengine.googleapis.com/v1alpha/projects/earthengine-legacy/thumbnails/0b8ef6864b745a493840fd4f831b20c7-678bb4c5f491298df1c0711b49615ec7:getPixels
+Please wait ...
+Data downloaded to /home/arogya/projects/afg-clustering/data/interim/tiles/4.tif
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 1377, in getresponse
+    response.begin()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 320, in begin
+    version, status, reason = self._read_status()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 289, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+http.client.RemoteDisconnected: Remote end closed connection without response
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/home/arogya/projects/afg-clustering/src/utils/rasters.py", line 229, in _get_rasters_for_chunk
+    if len(combined.bandNames().getInfo()) > 13:
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/computedobject.py", line 98, in getInfo
+    return data.computeValue(self)
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/data.py", line 730, in computeValue
+    return _execute_cloud_call(
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/data.py", line 330, in _execute_cloud_call
+    return call.execute(num_retries=num_retries)
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/_helpers.py", line 134, in positional_wrapper
+    return wrapped(*args, **kwargs)
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/http.py", line 900, in execute
+    resp, content = _retry_request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/http.py", line 177, in _retry_request
+    resp, content = http.request(uri, method, *args, **kwargs)
+  File "/home/arogya/.local/lib/python3.9/site-packages/google_auth_httplib2.py", line 218, in request
+    response, content = self.http.request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2/__init__.py", line 1701, in request
+    (response, content) = self._request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2/__init__.py", line 1421, in _request
+    (response, content) = self._conn_request(conn, request_uri, method, body, headers)
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2shim/__init__.py", line 154, in _conn_request
+    raise _map_exception(e)
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2shim/__init__.py", line 140, in _conn_request
+    urllib3_response = self.pool.request(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/request.py", line 78, in request
+    return self.request_encode_body(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/request.py", line 170, in request_encode_body
+    return self.urlopen(method, url, **extra_kw)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/poolmanager.py", line 376, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 785, in urlopen
+    retries = retries.increment(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/util/retry.py", line 525, in increment
+    raise six.reraise(type(error), error, _stacktrace)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/packages/six.py", line 769, in reraise
+    raise value.with_traceback(tb)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 1377, in getresponse
+    response.begin()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 320, in begin
+    version, status, reason = self._read_status()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 289, in _read_status
+    raise RemoteDisconnected("Remote end closed connection without"
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/arogya/projects/afg-clustering/src/poppy-preprocess.py", line 124, in <module>
+    rgh.get_rasters()
+  File "/home/arogya/projects/afg-clustering/src/utils/rasters.py", line 191, in get_rasters
+    chunk_results = [chunk.get() for chunk in chunk_processes]
+  File "/home/arogya/projects/afg-clustering/src/utils/rasters.py", line 191, in <listcomp>
+    chunk_results = [chunk.get() for chunk in chunk_processes]
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/multiprocessing/pool.py", line 771, in get
+    raise self._value
+urllib3.exceptions.ProtocolError: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))

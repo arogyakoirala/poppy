@@ -1,0 +1,90 @@
+/home/arogya/.local/lib/python3.9/site-packages/geopandas/_compat.py:111: UserWarning: The Shapely GEOS version (3.10.2-CAPI-1.16.0) is incompatible with the GEOS version PyGEOS was compiled with (3.10.1-CAPI-1.16.0). Conversions between both will be slow.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/home/arogya/projects/afg-clustering/src/poppy-preprocess.py", line 3, in <module>
+    from utils.rasters import RasterGenerationHelper, MergeRasterSingleAoi, Masker, Sampler
+  File "/home/arogya/projects/afg-clustering/src/utils/rasters.py", line 37, in <module>
+    ee.Initialize()
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/__init__.py", line 116, in Initialize
+    data.initialize(
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/data.py", line 203, in initialize
+    _install_cloud_api_resource()
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/data.py", line 262, in _install_cloud_api_resource
+    _cloud_api_resource = _cloud_api_utils.build_cloud_resource(
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/_cloud_api_utils.py", line 162, in build_cloud_resource
+    resource = build()
+  File "/home/arogya/.local/lib/python3.9/site-packages/ee/_cloud_api_utils.py", line 145, in build
+    return discovery.build(
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/_helpers.py", line 134, in positional_wrapper
+    return wrapped(*args, **kwargs)
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/discovery.py", line 270, in build
+    content = _retrieve_discovery_doc(
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/discovery.py", line 376, in _retrieve_discovery_doc
+    resp, content = req.execute(num_retries=num_retries)
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/_helpers.py", line 134, in positional_wrapper
+    return wrapped(*args, **kwargs)
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/http.py", line 900, in execute
+    resp, content = _retry_request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/googleapiclient/http.py", line 177, in _retry_request
+    resp, content = http.request(uri, method, *args, **kwargs)
+  File "/home/arogya/.local/lib/python3.9/site-packages/google_auth_httplib2.py", line 218, in request
+    response, content = self.http.request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2/__init__.py", line 1701, in request
+    (response, content) = self._request(
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2/__init__.py", line 1421, in _request
+    (response, content) = self._conn_request(conn, request_uri, method, body, headers)
+  File "/home/arogya/.local/lib/python3.9/site-packages/httplib2shim/__init__.py", line 140, in _conn_request
+    urllib3_response = self.pool.request(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/request.py", line 74, in request
+    return self.request_encode_url(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/request.py", line 96, in request_encode_url
+    return self.urlopen(method, url, **extra_kw)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/poolmanager.py", line 376, in urlopen
+    response = conn.urlopen(method, u.request_uri, **kw)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 703, in urlopen
+    httplib_response = self._make_request(
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 449, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/urllib3/connectionpool.py", line 444, in _make_request
+    httplib_response = conn.getresponse()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 1377, in getresponse
+    response.begin()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 320, in begin
+    version, status, reason = self._read_status()
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/http/client.py", line 281, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/socket.py", line 704, in readinto
+    return self._sock.recv_into(b)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/ssl.py", line 1241, in recv_into
+    return self.read(nbytes, buffer)
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/ssl.py", line 1099, in read
+    return self._sslobj.read(len, buffer)
+KeyboardInterrupt
+/home/arogya/.local/lib/python3.9/site-packages/geopandas/_compat.py:111: UserWarning: The Shapely GEOS version (3.10.2-CAPI-1.16.0) is incompatible with the GEOS version PyGEOS was compiled with (3.10.1-CAPI-1.16.0). Conversions between both will be slow.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/home/arogya/projects/afg-clustering/src/poppy-preprocess.py", line 3, in <module>
+    from utils.rasters import RasterGenerationHelper, MergeRasterSingleAoi, Masker, Sampler
+  File "/home/arogya/projects/afg-clustering/src/utils/rasters.py", line 31, in <module>
+    from sklearn.preprocessing import StandardScaler
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/sklearn/__init__.py", line 82, in <module>
+    from .base import clone
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/sklearn/base.py", line 17, in <module>
+    from .utils import _IS_32BIT
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/sklearn/utils/__init__.py", line 28, in <module>
+    from .fixes import np_version, parse_version
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/sklearn/utils/fixes.py", line 20, in <module>
+    import scipy.stats
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/scipy/stats/__init__.py", line 453, in <module>
+    from ._stats_py import *
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/scipy/stats/_stats_py.py", line 38, in <module>
+    from scipy.spatial.distance import cdist
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/scipy/spatial/__init__.py", line 108, in <module>
+    from ._geometric_slerp import geometric_slerp
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/scipy/spatial/_geometric_slerp.py", line 9, in <module>
+    from scipy.spatial.distance import euclidean
+  File "/home/arogya/.conda/envs/poppy-linux/lib/python3.9/site-packages/scipy/spatial/distance.py", line 125, in <module>
+    from . import _distance_pybind
+  File "<frozen importlib._bootstrap>", line 1056, in _handle_fromlist
+KeyboardInterrupt
