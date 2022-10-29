@@ -97,7 +97,7 @@ if UPTO in ['backfill', 'download', 'merge', 'mask', 'sample', 'prep_data'] or F
     _BEST_DATES_PATH = f'{DATA_DIR}/inputs/best_dates.csv'
     _PATH_TO_CHILD_GRID = f'{_VECTOR_OUTPUT_DIR}/child.gpkg'
 
-    bd = DatesHelper(DATA_DIR, SHP_PATH, [f'{YEAR}-01-01', f'{YEAR}-06-15'])
+    bd = DatesHelper(DATA_DIR, SHP_PATH, [f'{YEAR}-01-01', f'{YEAR}-06-15'], n_cores=N_CORES, bypass=False) # set bypass = False in prod
     bd.extract_best_dates()
         
 #     bd = BestDatesHelper(_PATH_TO_CHILD_GRID, n_cores = 1, year = YEAR)

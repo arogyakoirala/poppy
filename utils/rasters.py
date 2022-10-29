@@ -193,17 +193,22 @@ class RasterGenerationHelper:
     def _get_rasters_for_chunk(self, gdf_chunk, gdf_complete):
         
         for i, tile in gdf_chunk.iterrows():
-            temp = self.child.sjoin(self.parent[self.parent['pgrid_id']==tile['pgrid_id']])
+            temp = self.child.sjoin(self.parent[self.parent['pgrid_id']==tile['pgrid_id']], how="inner", predicate="intersects")
+#             temp = self.child.sjoin(self.parent)
+            
+            
             datewise_counts = temp.groupby(['BSD']).count()['grid_id'].sort_values(ascending=False)
             datewise_counts = datewise_counts.reset_index()
             datewise_counts = datewise_counts.reset_index().rename(columns={'index': 'Date Combo Code', 'grid_id': 'count'})
-            
+#             print("## TILE PGRID_ID present?", tile['pgrid_id'] in set(list(np.unique(self.parent['pgrid_id']))))
+#             print("## PARENT PGRID_IDs", self.parent['pgrid_id'])
             images = []
             for index, row in datewise_counts.iterrows():
                 
                 bsd = row['BSD']
-#                 bed = row['BED']
                 
+#                 bed = row['BED']
+#                 print("###DATE", date.fromisoformat(bsd).isoformat())
                 preStart = (date.fromisoformat(bsd) + timedelta(days = -7)).isoformat()
                 preEnd = (date.fromisoformat(bsd) + timedelta(days = +7)).isoformat()
                 postStart = (date.fromisoformat(bsd) + timedelta(days = +self.post_period_days[0])).isoformat()
@@ -235,14 +240,19 @@ class RasterGenerationHelper:
                     # Clip to AOI
                     combined_clip = combined.clip(aoiInput)
                     images.append(combined_clip)
-                    
+            
             bounds = self.parent[self.parent['pgrid_id'] == tile['pgrid_id']].bounds
             minx, miny, maxx, maxy = np.max(bounds['minx']), np.max(bounds['miny']),np.max(bounds['maxx']),np.max(bounds['maxy'])
             aoi = ee.Geometry.Rectangle([minx, miny, maxx, maxy])
 
             mosaicked = ee.ImageCollection([*images]).mosaic()
+#             print("BandsBrah", mosaicked.bandNames().getInfo())
             geemap.ee_export_image(
-                mosaicked, filename=self.raster_output_dir + str(tile['pgrid_id'])+".tif", scale=10, region=aoi, file_per_band=False
+                mosaicked, 
+                filename=self.raster_output_dir + str(tile['pgrid_id'])+".tif", 
+                scale=10, 
+                region=aoi, 
+                file_per_band=False
             )
             
             
