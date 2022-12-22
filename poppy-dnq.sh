@@ -22,7 +22,8 @@ echo "cores: $cores";
 # python -u poppy-ready-folders.py $shps --out_dir $outdir
 
 dnq_dirs=(`ls ${outdir}`)
-N=$cores
+N=1
+# N=$cores
 for ((i=1; i <= ${#dnq_dirs[@]}-1; i++)); do
     ((j=j%N)); ((j++==0)) && wait
     new_data_dir="${outdir}/${dnq_dirs[$i]}"
