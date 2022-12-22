@@ -23,7 +23,7 @@ echo "cores: $cores";
 
 dnq_dirs=(`ls ${outdir}`)
 N=$cores
-for ((i=0; i <= ${#dnq_dirs[@]}-1; i++)); do
+for ((i=1; i <= ${#dnq_dirs[@]}-1; i++)); do
     ((j=j%N)); ((j++==0)) && wait
     new_data_dir="${outdir}/${dnq_dirs[$i]}"
     echo
@@ -34,7 +34,7 @@ for ((i=0; i <= ${#dnq_dirs[@]}-1; i++)); do
     shp="$shps/${dnq_dirs[$i]}.gpkg"
     name="kmeans_3_diff_bands"
     SECONDS=0
-    echo $new_data_dir $shp $year $model $name
+    # echo $new_data_dir $shp $year $model $name
     log="$new_data_dir/log.txt"
     ./poppy-dnq-download.sh -s $shp -d $new_data_dir -y $year -m $model -n $name > $log & 
     echo "Logfile: ${log}"
