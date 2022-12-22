@@ -25,7 +25,7 @@ for aoi in aois:
 
     aoi = f"{SHP_DIR}/{aoi}"
     sh = ShapefileHelper(aoi, _VECTOR_OUTPUT_DIR)
-    sh.make_grid(resolution=50000, name="o", separate=True, prefix=dist_id, data_dir=DATA_DIR)
+    sh.make_grid(resolution=25000, name="o", separate=True, prefix=dist_id, data_dir=DATA_DIR)
 
 
 

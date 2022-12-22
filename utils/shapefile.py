@@ -117,7 +117,7 @@ class ShapefileHelper():
                 # d[id_col] = tile[id_col]
                 t = gpd.GeoDataFrame([d]).set_crs("epsg:4326")
                 t.to_file(self.vector_output_dir + prefix+"_"+ str(tile[id_col]) + ".gpkg", driver='GPKG')
-                Path(f"{data_dir}/outputs/predictions/{prefix}_{str(tile[id_col])}").mkdir(parents=True, exist_ok=True)
+                Path(f"{data_dir}/dnq_outputs/{prefix}_{str(tile[id_col])}").mkdir(parents=True, exist_ok=True)
         print("--------- Successfully saved to disk: {}".format(self.vector_output_dir + outputGridfn+ ".gpkg"))
         self._clean_dir()
         return output
