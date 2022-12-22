@@ -1,0 +1,26 @@
+total 26444
+drwxrwxr-x 3 arogya arogya     4096 Nov  7 17:16 .
+drwxrwxr-x 9 arogya arogya     4096 Nov  5 21:18 ..
+-rw-r--r-- 1 arogya arogya    12297 Sep 25 11:00 4-18-22PoppyBestDatesGeneration.ipynb
+-rw-rw-r-- 1 arogya arogya    69006 Nov  5 13:32 Best Dates Using Modis Directly.ipynb
+-rw-rw-r-- 1 arogya arogya   363019 Nov  7 14:47 Correlation and SSE.ipynb
+-rw-rw-r-- 1 arogya arogya   230329 Sep  4 09:38 Correlation and SSE.pdf
+-rw-rw-r-- 1 arogya arogya    18788 Oct 30 10:04 DEBUG - Download.ipynb
+-rw-rw-r-- 1 arogya arogya     7284 Aug 30 17:37 __debug.ipynb
+-rw-rw-r-- 1 arogya arogya    13164 Sep 11 16:21 District Table.ipynb
+-rw-rw-r-- 1 arogya arogya     9945 Nov  5 16:21 FixDownload.ipynb
+-rw-rw-r-- 1 arogya arogya    44254 Nov  5 18:02 FixPredict.ipynb
+-rw-rw-r-- 1 arogya arogya   134342 Nov  5 12:35 GetBestDatesFromCentroid.ipynb
+-rw-rw-r-- 1 arogya arogya     7591 Nov  7 13:42 Get List of Poppy Producing Districts.ipynb
+-rw-rw-r-- 1 arogya arogya     1493 Nov  1 14:33 Investigate child structure.ipynb
+drwxrwxr-x 2 arogya arogya     4096 Nov  7 17:01 .ipynb_checkpoints
+-rw-rw-r-- 1 arogya arogya        0 Nov  7 17:16 logs.txt
+-rw-rw-r-- 1 arogya arogya    17101 Aug 30 10:21 Merge Best Dates Files.ipynb
+-rw-rw-r-- 1 arogya arogya    20954 Nov  4 21:36 MissingDownload.ipynb
+-rw-rw-r-- 1 arogya arogya  1058674 Sep 29 13:31 PoppyBestDatesGenerator.ipynb
+-rw-rw-r-- 1 arogya arogya    14572 Nov  7 13:47 PrioritizeDistricts.ipynb
+-rw-rw-r-- 1 arogya arogya   684436 Nov  7 14:21 ProcessIllustration.ipynb
+-rw-rw-r-- 1 arogya arogya 23541384 Nov  5 17:59 test.tif
+-rw-rw-r-- 1 arogya arogya     2618 Nov  7 17:16 Untitled1.ipynb
+-rw-rw-r-- 1 arogya arogya       72 Nov  7 17:00 Untitled.ipynb
+-rw-rw-r-- 1 arogya arogya   628910 Oct  3 15:13 VisualizeDateAssignments.ipynb

@@ -1,0 +1,32 @@
+/usr/local/anaconda3/condabin/conda: line 3: import: command not found
+/usr/local/anaconda3/condabin/conda: line 6: syntax error near unexpected token `sys.argv'
+/usr/local/anaconda3/condabin/conda: line 6: `if len(sys.argv) > 1 and sys.argv[1].startswith('shell.') and sys.path and sys.path[0] == '':'
+shp_path: ../datatemp/inputs/2416.gpkg
+year: 2019
+data_dir: ../datatemp
+model: /data/tmp/arogya/data/outputs/models/kmeans_3_diff_bands
+cores: 10
+/home/arogya/.local/lib/python3.9/site-packages/geopandas/_compat.py:111: UserWarning: The Shapely GEOS version (3.10.2-CAPI-1.16.0) is incompatible with the GEOS version PyGEOS was compiled with (3.10.1-CAPI-1.16.0). Conversions between both will be slow.
+  warnings.warn(
+--------- Generating grid at 25000mx25000m ...
+--------- Grid generation complete. Saving to disk...
+#################### Output Columns: Index(['FID', 'geometry'], dtype='object')
+#################### Output Columns: Index(['grid_id', 'geometry', 'DISTID', 'OBJECTID', 'PROV_34_NA', 'DIST_34_NA',
+       'PROVID', 'poppy_ha', 'ag_ha', 'poppy_perc', 'quantile', 'rank'],
+      dtype='object')
+--------- Successfully saved to disk: ../datatemp/interim/grid.gpkg
+
+
+
+
+Starting process for TILE: 0
+
+
+
+
+Starting process for TILE: 1
+
+
+
+
+Starting process for TILE: 2

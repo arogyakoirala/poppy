@@ -27,14 +27,16 @@ class DatesHelper:
         self.bypass=bypass
     
     
-    def download_modis(self, max_ndvi_image):
-        parent = gpd.read_file(f"{self.data_dir}/interim/parent_best_dates.gpkg")        
-
+    def download_modis(self, parent, max_ndvi_image):
+#         self.parent= gpd.read_file(f"{self.data_dir}/interim/parent_best_dates.gpkg")        
+#         if os.path.exists(self.tile_dir):
+#            shutil.rmtree(self.tile_dir)
         cpus = self.n_cores
         parent_chunks = np.array_split(parent, cpus)
         pool = mp.Pool(processes=cpus)
         chunk_processes = [pool.apply_async(self._download_modis_chunk, args=(max_ndvi_image, chunk, parent)) for chunk in parent_chunks]
         chunk_results = [chunk.get() for chunk in chunk_processes]
+        print(os.listdir(self.tile_dir))
         
         
     
@@ -52,6 +54,7 @@ class DatesHelper:
             )
           
 
+        
     def extract_best_dates(self):
         start = time.time()
         # Get best date for each tile
@@ -65,7 +68,7 @@ class DatesHelper:
         ndvi_array = ndvi.toArray();
         max_ndvi_date = ndvi_array.arrayArgmax();
         max_ndvi_image = ee.Image(max_ndvi_date).arrayProject([0]).arrayFlatten([['maxDate_start', 'band2']]).clip(aoi).select("maxDate_start");
-
+        self.max_ndvi_image = max_ndvi_image
         # Remap values so '0' doesnt overlap with nodata        
         fromValues = []
         i = 0
@@ -105,10 +108,11 @@ class DatesHelper:
         Path(TILE_DIR).mkdir(parents=True, exist_ok=True)
         Path(MODIS_DIR).mkdir(parents=True, exist_ok=True)
         
-        if not self.bypass:
-            self.download_modis(max_ndvi_image)
+        parent= gpd.read_file(f"{self.data_dir}/interim/parent_best_dates.gpkg")        
         
-
+        if not self.bypass:
+            self.download_modis(parent, max_ndvi_image)
+            self.fix_until_complete()    
         
         
         if os.path.exists(f"{MODIS_DIR}/interim/temp.vrt"):
@@ -125,7 +129,7 @@ class DatesHelper:
             os.remove(f"{MODIS_DIR}/interim/centroids.gpkg")
 
         # Merge downloaded modis tiles into one
-        os.system(f'find {TILE_DIR}  -maxdepth 1 -name "*.tif" -print0 | xargs --null -I{"{}"} gdalbuildvrt {MODIS_DIR}/temp.vrt {"{}"} -srcnodata "0"')
+        os.system(f'find {TILE_DIR}  -maxdepth 1 -name "*.tif" -print0 | xargs -0 gdalbuildvrt -srcnodata "0" {MODIS_DIR}/temp.vrt')
         os.system(f'gdal_merge.py -o {MODIS_DIR}/merged.tif {MODIS_DIR}/temp.vrt')
         
         print(f"Merged tiles.. - {time.time()-start} sec")
@@ -190,16 +194,18 @@ class DatesHelper:
         centroids = centroids.sjoin(merged, how="inner", predicate='intersects')
         centroids = centroids[['feature', 'geometry', 'DateCode']]
         print(f"Created Centroids.. - {time.time()-start} sec")
+        print(len(centroids))
         
         child = gpd.read_file(f"{self.data_dir}/interim/child.gpkg")
-        child = child.sjoin(centroids,  how="inner", predicate='intersects')
+        child.to_file(f"{self.data_dir}/interim/child_bkp.gpkg", driver="GPKG")
+        child = child.sjoin(centroids,  how="inner", predicate='intersects') ######################### change to centroids.
         child = child[['DateCode', 'geometry']]
         child['DateCode'] = child['DateCode'].astype(str)
         child = child.replace({"DateCode": self.date_dict})
         child = child.reset_index()
         child.columns = ["grid_id", "BSD", "geometry"]
-        child.to_file(f"{MODIS_DIR}/child.gpkg", driver="GPKG")
-        child = gpd.read_file(f"{MODIS_DIR}/child.gpkg")
+        child.to_file(f"{self.data_dir}/interim/child.gpkg", driver="GPKG")
+        child = gpd.read_file(f"{self.data_dir}/interim/child.gpkg")
         child = child[child['BSD'] != "-99"]
         child = child.reset_index()
         child = child[['index', 'BSD', 'geometry']]
@@ -233,4 +239,29 @@ class DatesHelper:
 #         self.centroids = centroids
 # #         self.joined = joined
 #         self.child = child
+
+    def get_missing(self):
+        MODIS_DIR = f"{self.data_dir}/interim/modis"
+        TILES_DIR = MODIS_DIR + "/tiles"
+        parent= gpd.read_file(f"{self.data_dir}/interim/parent_best_dates.gpkg")        
+        all_ids_ = set(parent['pgrid_id'])
+        downloaded_ids_ = set([int(file.split(".tif")[0]) for file in os.listdir(TILES_DIR)])
+        missing = list(all_ids_ - downloaded_ids_)
+        return missing
+        
+    def fix_until_complete(self):
+        complete = False
+        
+        while not complete:
+            missing = self.get_missing()
+            if len(missing) > 0:
+                print(f"#### Missing {len(missing)} tiles, redownloading..")
+                parent= gpd.read_file(f"{self.data_dir}/interim/parent_best_dates.gpkg")        
+#                 new_parent = parent[parent['pgrid_id'].isin(missing)]
+                self.download_modis(parent, self.max_ndvi_image)
+            else:
+                print(f"#### Missing 0 tiles, proceeding to merge..")
+                complete = True
+        
+        
         

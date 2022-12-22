@@ -99,9 +99,13 @@ class ShapefileHelper():
         
 #         # clip to boundary
         output = gpd.read_file(self.vector_output_dir + outputGridfn +".shp")
+        print(f"#################### Output Columns: {output.columns}")
+    
         
         output = output.set_crs("epsg:32642").to_crs(out_crs).reset_index().rename(columns={"index": id_col}).drop('FID', axis=1)
         output = gpd.sjoin(output, self.gdf.to_crs("epsg:4326")).drop('index_right', axis=1)
+        
+        print(f"#################### Output Columns: {output.columns}")
         
         
 #         output = gpd.sjoin(output.to_crs("epsg:4326"), self.gdf).drop('index_right', axis=1)
@@ -114,7 +118,10 @@ class ShapefileHelper():
 #                 os.remove(os.path.join(directory, f))
 
         self.output = output
+#         if id_col in output.columns:  
         output = output.drop(id_col, axis=1).reset_index().drop('index', axis=1).reset_index().rename(columns={'index': id_col})
+#         else:
+#             output = output.reset_index().drop('index', axis=1).reset_index().rename(columns={'index': id_col})
         output.to_file(self.vector_output_dir + outputGridfn + ".gpkg", driver='GPKG')
         self._clean_dir()
         print("--------- Successfully saved to disk: {}".format(self.vector_output_dir + outputGridfn+ ".gpkg"))

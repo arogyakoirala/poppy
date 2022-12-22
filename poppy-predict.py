@@ -4,7 +4,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("data_dir")
 parser.add_argument("shp_path")
 parser.add_argument("model_path")
-parser.add_argument("data_file_suffix")
+# parser.add_argument("data_file_suffix")
 # parser.add_argument("--tiles_path")
 parser.add_argument("--model_type")
 parser.add_argument("--num")
@@ -25,7 +25,7 @@ import shutil
 DATA_DIR = args.data_dir
 SHP_PATH = args.shp_path
 MODEL_PATH = args.model_path
-DATA_FILE_SUFFIX = args.data_file_suffix
+DATA_FILE_SUFFIX = "diff_bands"
 TILES_PATH = f"{DATA_DIR}/interim/tiles"
 YEAR = '2019'
 NAME = MODEL_PATH.split("/")[-1]
@@ -33,6 +33,9 @@ SKIP_RASTER_GENERATION = False
 N = 3
 MODEL_TYPE = 'kmeans'
 DIST = '2308'
+
+    
+print(f"data_dir={DATA_DIR}, shp_path={SHP_PATH}, model_path = {MODEL_PATH}, df_suffix={DATA_FILE_SUFFIX}, tiles_path={TILES_PATH}, year={YEAR}, name={NAME}, N={N}, SKIP_RASTER_GENERATION={SKIP_RASTER_GENERATION}, MODEL_TYPE={MODEL_TYPE}, DIST={DIST}")
 
 if args.year:
     YEAR = args.year
@@ -49,14 +52,13 @@ if args.dist:
 # if args.tiles_path:
 #     TILES_PATH = arg.tiles_path
 
-    
 
 
 if not SKIP_RASTER_GENERATION:
     
     
-    if os.path.exists(f"{DATA_DIR}/interim/tiles"):
-        shutil.rmtree(f"{DATA_DIR}/interim/tiles")
+    if os.path.exists(f"{DATA_DIR}/interim/temp"):
+        shutil.rmtree(f"{DATA_DIR}/interim/temp")
         
     if os.path.exists(f"{DATA_DIR}/interim/temp.vrt"):
         os.remove(f"{DATA_DIR}/interim/temp.vrt")
@@ -78,7 +80,10 @@ if not SKIP_RASTER_GENERATION:
     mrs.merge("temp")
 
     # Create Masked Raster for AOI
-    _CROP_MASK_PATH = f'{DATA_DIR}/inputs/{YEAR}_E060N40_PROBAV_LC100_global_v3.0.1_2019.tif'
+#     _CROP_MASK_PATH = f'{DATA_DIR}/inputs/{YEAR}_E060N40_PROBAV_LC100_global_v3.0.1_2019.tif'
+#     _CROP_MASK_PATH = f'/data/tmp/arogya/data/inputs/2019_E060N40_PROBAV_LC100_global_v3.0.1_2019.tif'
+    _CROP_MASK_PATH = f'/data/tmp/arogya/data/inputs/updated_mask.tif'
+
     _INPUT_RASTER_PATH = f'{DATA_DIR}/interim/temp.tif'
     print("In Masker")
 

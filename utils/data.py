@@ -48,7 +48,7 @@ class ModelingHelper:
         self.raw = pd.read_pickle(raw)
         self.data_dir = data_dir
         self.run_name = run_name
-        with rasterio.open(f"{self.data_dir}/interim/masked.tif") as src:
+        with rasterio.open(f"{self.data_dir}/interim/temp.tif") as src:
             self.profile = src.profile
     
     def ready_data(self, data):
@@ -113,12 +113,13 @@ class ModelingHelper:
         clust_assignments = pd.melt(clust_assignments, value_vars=['clust'], value_name='value', ignore_index=False)   
         clust_assignments = clust_assignments.drop('variable', axis=1) 
         clust_assignments[np.isnan(clust_assignments['value'])] = -99
-        clust_assignments = clust_assignments.to_xarray()
+        clust_assignments = clust_assignments.reset_index().drop_duplicates(subset=['y', 'x']).set_index(['y', 'x']).to_xarray()
         clust_assignments.rio.to_raster(f"{filename}.tif")
         
         with rasterio.open(f"{filename}.tif", "r+") as src:
             src.crs = crs
             src.nodata=-99
+            src.transform=transform
     
     def save_ndvi_plot(self, results, model_type, n, filename):
         fig, ax = plt.subplots(n, 1, dpi=70, figsize=(9,9))

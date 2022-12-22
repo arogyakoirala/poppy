@@ -301,8 +301,10 @@ class MergeRasterSingleAoi:
         
         Path(temp_dir).mkdir(parents=True, exist_ok=True)
         
+        print("HEEEEERE!!", rasters)
         for file in rasters:
-            shutil.copy(file, temp_dir+"/")
+            if os.path.exists(file):
+                shutil.copy(file, temp_dir+"/")
 
         
         if os.path.exists(f"{self.raster_out_dir}/{filename}.vrt"):
@@ -391,15 +393,17 @@ class Masker:
         
     def mask(self, filename="masked"):
         out_img, out_transform = mask(self.mask_raster, shapes=self.input_shp.geometry, crop=True)
-        out_img[out_img == 0] = 255
+        out_img[out_img == 0.0] = 255
         is_valid = (out_img != 255.0).astype(np.uint8)
         cropland = []
         for coords, value in features.shapes(is_valid, transform=out_transform):
-            if value != 0:
-                geom = shape(coords)
-                cropland.append({"geometry": geom})
+#             print(value)
+#             if value != 0:
+            geom = shape(coords)
+            cropland.append({"geometry": geom, "value" : value})
                 
         cropland = gpd.GeoDataFrame(cropland).set_crs("epsg:4326")
+        cropland = cropland[cropland['value']==1] # only get a shapefile of cropland
         out_img, out_transform = mask(self.input_raster, cropland.geometry, crop=True)
         out_img[np.isnan(out_img)] = 0
         out_img = out_img[0:24]

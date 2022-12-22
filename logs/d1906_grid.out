@@ -1,0 +1,36 @@
+/home/arogya/.local/lib/python3.9/site-packages/geopandas/_compat.py:111: UserWarning: The Shapely GEOS version (3.10.2-CAPI-1.16.0) is incompatible with the GEOS version PyGEOS was compiled with (3.10.1-CAPI-1.16.0). Conversions between both will be slow.
+  warnings.warn(
+*** Earth Engine *** FINAL DEADLINE: ee.Authenticate will fail after 2022-06-06. Please upgrade. https://developers.google.com/earth-engine/guides/python_install
+--- Generating grids...
+--------- Generating grid at 2500mx2500m ...
+--------- Grid generation complete. Saving to disk...
+#################### Output Columns: Index(['FID', 'geometry'], dtype='object')
+#################### Output Columns: Index(['pgrid_id', 'geometry', 'DISTID', 'OBJECTID', 'PROV_34_NA',
+       'DIST_34_NA', 'PROVID', 'poppy_ha', 'ag_ha', 'poppy_perc', 'quantile',
+       'rank'],
+      dtype='object')
+--------- Successfully saved to disk: ../data/interim/parent.gpkg
+--------- Generating grid at 250mx250m ...
+--------- Grid generation complete. Saving to disk...
+#################### Output Columns: Index(['FID', 'geometry'], dtype='object')
+#################### Output Columns: Index(['grid_id', 'geometry', 'DISTID', 'OBJECTID', 'PROV_34_NA', 'DIST_34_NA',
+       'PROVID', 'poppy_ha', 'ag_ha', 'poppy_perc', 'quantile', 'rank'],
+      dtype='object')
+--------- Successfully saved to disk: ../data/interim/child.gpkg
+--------- Generating grid at 25000mx25000m ...
+--------- Grid generation complete. Saving to disk...
+#################### Output Columns: Index(['FID', 'geometry'], dtype='object')
+#################### Output Columns: Index(['pgrid_id', 'geometry', 'DISTID', 'OBJECTID', 'PROV_34_NA',
+       'DIST_34_NA', 'PROVID', 'poppy_ha', 'ag_ha', 'poppy_perc', 'quantile',
+       'rank'],
+      dtype='object')
+--------- Successfully saved to disk: ../data/interim/parent_best_dates.gpkg
+--------- Generating grid at 10000mx10000m ...
+--------- Grid generation complete. Saving to disk...
+#################### Output Columns: Index(['FID', 'geometry'], dtype='object')
+#################### Output Columns: Index(['pgrid_id', 'geometry', 'DISTID', 'OBJECTID', 'PROV_34_NA',
+       'DIST_34_NA', 'PROVID', 'poppy_ha', 'ag_ha', 'poppy_perc', 'quantile',
+       'rank'],
+      dtype='object')
+--------- Successfully saved to disk: ../data/interim/parent_10.gpkg
+#### Grid Gen Complete in 27.52943444252014 ####

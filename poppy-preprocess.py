@@ -87,6 +87,7 @@ if UPTO in ['grid', 'backfill', 'download','merge', 'mask', 'sample', 'prep_data
     sh.make_grid(resolution=_RESOLUTION_P, name="parent", id_col="pgrid_id")
     sh.make_grid(resolution=_RESOLUTION_C, name="child")
     sh.make_grid(resolution=25000, name="parent_best_dates", id_col="pgrid_id")
+    sh.make_grid(resolution=10000, name="parent_10", id_col="pgrid_id")
     print(f"#### Grid Gen Complete in {(time.time() - start)} ####")
     
 
@@ -97,9 +98,8 @@ if UPTO in ['backfill', 'download', 'merge', 'mask', 'sample', 'prep_data'] or F
     _BEST_DATES_PATH = f'{DATA_DIR}/inputs/best_dates.csv'
     _PATH_TO_CHILD_GRID = f'{_VECTOR_OUTPUT_DIR}/child.gpkg'
 
-    bd = DatesHelper(DATA_DIR, SHP_PATH, [f'{YEAR}-01-01', f'{YEAR}-06-15'], n_cores=N_CORES, bypass=False) # set bypass = False in prod
+    bd = DatesHelper(DATA_DIR, SHP_PATH, [f'{YEAR}-01-01', f'{YEAR}-06-15'], n_cores=1, bypass=False) # set bypass = False in prod
     bd.extract_best_dates()
-        
 #     bd = BestDatesHelper(_PATH_TO_CHILD_GRID, n_cores = 1, year = YEAR)
 #     bd = BestDatesHelper(_BEST_DATES_PATH, _PATH_TO_CHILD_GRID, _VECTOR_OUTPUT_DIR, "child", YEAR, n_neighbors=N_NEIGHBORS, diagnose=True)
 #     bd.fill_empty_dates()
@@ -116,11 +116,11 @@ if UPTO in ['download','merge', 'mask', 'sample', 'prep_data'] or FROM in ['grid
     _PATH_TO_CHILD_GRID = f"{_VECTOR_OUTPUT_DIR}/child.gpkg"
     _N_CORES = N_CORES
     
-    if os.path.exists(_TILE_OUTPUT_DIR):
-        shutil.rmtree(_TILE_OUTPUT_DIR)
+#     if os.path.exists(_TILE_OUTPUT_DIR):
+#         shutil.rmtree(_TILE_OUTPUT_DIR)
         
     Path(_TILE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
-    rgh = RasterGenerationHelper(_PATH_TO_PARENT_GRID, _PATH_TO_CHILD_GRID, _TILE_OUTPUT_DIR, _N_CORES, clean = True, post_period_days = POST_PERIOD_DAYS)
+    rgh = RasterGenerationHelper(_PATH_TO_PARENT_GRID, _PATH_TO_CHILD_GRID, _TILE_OUTPUT_DIR, _N_CORES, clean = False, post_period_days = POST_PERIOD_DAYS)
     rgh.get_rasters()
     print(f"#### Download Complete in {(time.time() - start)}  ####")
     
@@ -136,7 +136,9 @@ if UPTO in ['merge', 'mask', 'sample', 'prep_data'] or FROM in ['grid', 'backfil
 if UPTO in ['mask', 'sample', 'prep_data'] or FROM in ['grid', 'backfill', 'download','merge', 'mask']:
     print("--- Masking images..")
     start = time.time()
-    _CROP_MASK_PATH = f'{DATA_DIR}/inputs/{YEAR}_E060N40_PROBAV_LC100_global_v3.0.1_2019.tif'
+#     _CROP_MASK_PATH = f'{DATA_DIR}/inputs/{YEAR}_E060N40_PROBAV_LC100_global_v3.0.1_2019.tif'
+#     _CROP_MASK_PATH = f'/data/tmp/arogya/data/inputs/2019_E060N40_PROBAV_LC100_global_v3.0.1_2019.tif'
+    _CROP_MASK_PATH = f'/data/tmp/arogya/data/inputs/updated_mask.tif'
     _INPUT_RASTER_PATH = f'{DATA_DIR}/interim/merged.tif'
     masker = Masker(DATA_DIR, SHP_PATH, _INPUT_RASTER_PATH, _CROP_MASK_PATH)
     masker.mask()
