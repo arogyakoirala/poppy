@@ -41,11 +41,11 @@ complete = False
 tries = 0
 while not complete:
     missing = get_missing()
-    if len(missing) > 0 and tries < 5:
+    if len(missing) > 0 and tries < 3:
         print(f"#### Missing {len(missing)} tiles, redownloading..")
     
         _TILE_OUTPUT_DIR = f'{DATA_DIR}/interim/tiles'
-        _PATH_TO_PARENT_GRID = f"{DATA_DIR}/interim/redo.gpkg"
+        _PATH_TO_PARENT_GRID = f"{DATA_DIR}/interim/parent.gpkg"
         _PATH_TO_CHILD_GRID = f"{DATA_DIR}/interim/child.gpkg"
         _N_CORES = N_CORES
 
