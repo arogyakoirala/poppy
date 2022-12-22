@@ -37,7 +37,7 @@ for ((i=1; i <= ${#dnq_dirs[@]}-1; i++)); do
     SECONDS=0
     echo $new_data_dir $shp $year $model $name
     log="$new_data_dir/log.txt"
-    ./poppy-dnq-download.sh -s $shp -d $new_data_dir -y $year -m $model -n $name -c $cores > $log & 
+    ./poppy-dnq-download.sh -s $shp -d $new_data_dir -y $year -m $model -n $name > $log & 
     echo "Logfile: ${log}"
     echo
     echo
