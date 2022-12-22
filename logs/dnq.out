@@ -1,0 +1,8 @@
+./poppy-dnq.sh: line 2: /usr/local/anaconda3/condabin/conda: No such file or directory
+./poppy-dnq.sh: line 3: conda: command not found
+shps_path: 
+year: 2019
+outdir: /data/tmp/arogya/data_dec/outputs/predictions
+model: /data/tmp/arogya/data/outputs/models/kmeans_3_diff_bands
+cores: 25
+ls: /data/tmp/arogya/data_dec/outputs/predictions: No such file or directory
