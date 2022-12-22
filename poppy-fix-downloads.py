@@ -41,20 +41,20 @@ complete = False
 tries = 0
 while not complete:
     missing = get_missing()
-    if len(missing) > 0 and tries < 3:
+    if len(missing) > 0 and tries < 5:
         print(f"#### Missing {len(missing)} tiles, redownloading..")
     
         _TILE_OUTPUT_DIR = f'{DATA_DIR}/interim/tiles'
-        _PATH_TO_PARENT_GRID = f"{DATA_DIR}/interim/parent.gpkg"
+        _PATH_TO_PARENT_GRID = f"{DATA_DIR}/interim/redo.gpkg"
         _PATH_TO_CHILD_GRID = f"{DATA_DIR}/interim/child.gpkg"
         _N_CORES = N_CORES
 
-        if os.path.exists(_TILE_OUTPUT_DIR):
-            shutil.rmtree(_TILE_OUTPUT_DIR)
+        # if os.path.exists(_TILE_OUTPUT_DIR):
+        #     shutil.rmtree(_TILE_OUTPUT_DIR)
 
 #         shutil.rmtree(_TILE_OUTPUT_DIR)
         Path(_TILE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
-        rgh = RasterGenerationHelper(_PATH_TO_PARENT_GRID, _PATH_TO_CHILD_GRID, _TILE_OUTPUT_DIR, _N_CORES, clean = True, post_period_days = [30,45])
+        rgh = RasterGenerationHelper(_PATH_TO_PARENT_GRID, _PATH_TO_CHILD_GRID, _TILE_OUTPUT_DIR, _N_CORES, clean = False, post_period_days = [30,45])
         rgh.get_rasters()
         tries += 1
     else:
