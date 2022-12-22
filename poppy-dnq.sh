@@ -24,7 +24,7 @@ echo "cores: $cores";
 dnq_dirs=(`ls ${outdir}`)
 N=1
 # N=$cores
-for ((i=1; i <= ${#dnq_dirs[@]}-1; i++)); do
+for ((i=0; i <= ${#dnq_dirs[@]}-1; i++)); do
     ((j=j%N)); ((j++==0)) && wait
     new_data_dir="${outdir}/${dnq_dirs[$i]}"
     echo
