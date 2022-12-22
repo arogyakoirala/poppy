@@ -19,7 +19,7 @@ class ShapefileHelper():
         self._make_dir()
         self._read_file()
     
-    def make_grid(self, resolution, name, out_crs="epsg:4326", id_col="grid_id"):
+    def make_grid(self, resolution, name, out_crs="epsg:4326", id_col="grid_id", separate=False, prefix="", data_dir="../data/outputs"):
 #         self.gdf.boundary.plot()
         
         gridWidth, gridHeight = resolution, resolution
@@ -100,31 +100,26 @@ class ShapefileHelper():
 #         # clip to boundary
         output = gpd.read_file(self.vector_output_dir + outputGridfn +".shp")
         print(f"#################### Output Columns: {output.columns}")
-    
-        
         output = output.set_crs("epsg:32642").to_crs(out_crs).reset_index().rename(columns={"index": id_col}).drop('FID', axis=1)
         output = gpd.sjoin(output, self.gdf.to_crs("epsg:4326")).drop('index_right', axis=1)
         
         print(f"#################### Output Columns: {output.columns}")
-        
-        
-#         output = gpd.sjoin(output.to_crs("epsg:4326"), self.gdf).drop('index_right', axis=1)
-
-        
-#         print("Saving generated shapefile to disk..")
-#         if os.path.exists(self.vector_output_dir + outputGridfn):
-#             directory = self.vector_output_dir + outputGridfn
-#             for f in os.listdir(directory):
-#                 os.remove(os.path.join(directory, f))
-
         self.output = output
-#         if id_col in output.columns:  
+        output = gpd.clip(output, self.gdf.to_crs("epsg:4326"))
+        print(output.columns)
         output = output.drop(id_col, axis=1).reset_index().drop('index', axis=1).reset_index().rename(columns={'index': id_col})
-#         else:
-#             output = output.reset_index().drop('index', axis=1).reset_index().rename(columns={'index': id_col})
-        output.to_file(self.vector_output_dir + outputGridfn + ".gpkg", driver='GPKG')
-        self._clean_dir()
+        if not separate:
+            output.to_file(self.vector_output_dir + outputGridfn + ".gpkg", driver='GPKG')
+
+        else:
+            for i, tile in output.iterrows():
+                d = {'geometry': tile['geometry']}
+                # d[id_col] = tile[id_col]
+                t = gpd.GeoDataFrame([d]).set_crs("epsg:4326")
+                t.to_file(self.vector_output_dir + prefix+"_"+ str(tile[id_col]) + ".gpkg", driver='GPKG')
+                Path(f"{data_dir}/outputs/predictions/{prefix}_{str(tile[id_col])}").mkdir(parents=True, exist_ok=True)
         print("--------- Successfully saved to disk: {}".format(self.vector_output_dir + outputGridfn+ ".gpkg"))
+        self._clean_dir()
         return output
 
     def subset_grid(self, grid_path, aoi_path):
@@ -146,6 +141,7 @@ class ShapefileHelper():
     
     def _clean_dir(self):
         test = os.listdir(self.vector_output_dir)
+        print(test)
 
         for item in test:
             if item.endswith(".shp"):
