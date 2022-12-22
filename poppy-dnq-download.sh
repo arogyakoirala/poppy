@@ -11,7 +11,6 @@ do
         y) year=${OPTARG};;
         m) model=${OPTARG};;
         n) name=${OPTARG};;
-        c) cores=${OPTARG};;
     esac
 done
 
