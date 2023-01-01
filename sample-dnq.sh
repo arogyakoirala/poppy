@@ -18,11 +18,11 @@ dnq_dirs=(`ls ${shps}`)
 
 N=1
 for ((i=0; i <= ${#dnq_dirs[@]}-1; i++)); do
-    # ((j=j%N)); ((j++==0)) && wait
-    # echo ${dnq_dirs[$i]}
+    ((j=j%N)); ((j++==0)) && wait
+    echo ${dnq_dirs[$i]}
     shp_path="$shps/${dnq_dirs[$i]}"
     
-    # echo $outdir 
+    echo $outdir $shp_path
     python sample.py ${outdir} ${shp_path} --n_cores 1
 done
 
