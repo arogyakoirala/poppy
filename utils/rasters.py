@@ -33,6 +33,7 @@ from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
 import pickle
 import json 
+import zarr
 
 ee.Initialize()
 
@@ -463,6 +464,22 @@ class Sampler:
         
         return df, profile
         
+    def sample_zarr(self, sample_size, sample_filename="sample", full_filename="full", save_full = True):
+        df, profile = self._generate_df_from_raster()
+        sample_length = int(len(df) * sample_size)
+        sample = df.sample(sample_length, random_state=7)
+
+        copy = sample.copy()
+        for col in range(1,13):
+            copy[col] = copy[col+12] - copy[col]
+        sample = copy[[*range(1,13), 'ndvi_pre','dayofyear']]
+        if os.path.exists(f'{self.data_dir}/interim/{sample_filename}.zarr'):
+            z = zarr.open(f'{self.data_dir}/interim/{sample_filename}.zarr', mode='a')
+            z.append(sample)
+        else:
+            zarr.save(f'{self.data_dir}/interim/{sample_filename}.zarr', sample) 
+
+
     def sample(self, sample_size, sample_filename="sample", full_filename="full", save_full = True):
         df, profile = self._generate_df_from_raster()
         sample_length = int(len(df) * sample_size)

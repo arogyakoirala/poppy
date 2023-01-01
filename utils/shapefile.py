@@ -102,7 +102,9 @@ class ShapefileHelper():
         print(f"#################### Output Columns: {output.columns}")
         output = output.set_crs("epsg:32642").to_crs(out_crs).reset_index().rename(columns={"index": id_col}).drop('FID', axis=1)
         output = gpd.sjoin(output, self.gdf.to_crs("epsg:4326")).drop('index_right', axis=1)
-        
+        if 'grid_id_left' in output.columns:
+            output['grid_id'] = output['grid_id_left']
+            output = output.drop(['grid_id_left', 'grid_id_right'], axis=1)
         print(f"#################### Output Columns: {output.columns}")
         self.output = output
         output = gpd.clip(output, self.gdf.to_crs("epsg:4326"))
