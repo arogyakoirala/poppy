@@ -428,8 +428,8 @@ class Sampler:
         self.input_raster = input_raster
         self.data_dir = data_dir
 
-        if os.path.exists(f'{self.data_dir}/interim/{sample_filename}.zarr'):
-            shutil.rmtree(f'{self.data_dir}/interim/{sample_filename}.zarr')
+        if os.path.exists(f'{self.data_dir}/interim/master_sample.zarr'):
+            shutil.rmtree(f'{self.data_dir}/interim/master_sample.zarr')
         
     def _add_ndvi(self, df, b8, b4, label):
         df[label] = (df[b8] - df[b4]) / (df[b8] + df[b4]) 
