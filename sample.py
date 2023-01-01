@@ -119,7 +119,7 @@ if UPTO in ['download','merge', 'mask', 'sample', 'prep_data'] or FROM in ['grid
 #         shutil.rmtree(_TILE_OUTPUT_DIR)
         
     Path(_TILE_OUTPUT_DIR).mkdir(parents=True, exist_ok=True)
-    rgh = RasterGenerationHelper(_PATH_TO_PARENT_GRID, _PATH_TO_CHILD_GRID, _TILE_OUTPUT_DIR, _N_CORES, clean = False, post_period_days = POST_PERIOD_DAYS)
+    rgh = RasterGenerationHelper(_PATH_TO_PARENT_GRID, _PATH_TO_CHILD_GRID, _TILE_OUTPUT_DIR, _N_CORES, clean = True, post_period_days = POST_PERIOD_DAYS)
     rgh.get_rasters()
     print(f"#### Download Complete in {(time.time() - start)}  ####")
     
