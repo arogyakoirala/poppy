@@ -427,6 +427,9 @@ class Sampler:
     def __init__(self, data_dir, input_raster):
         self.input_raster = input_raster
         self.data_dir = data_dir
+
+        if os.path.exists(f'{self.data_dir}/interim/{sample_filename}.zarr'):
+            shutil.rmtree(f'{self.data_dir}/interim/{sample_filename}.zarr')
         
     def _add_ndvi(self, df, b8, b4, label):
         df[label] = (df[b8] - df[b4]) / (df[b8] + df[b4]) 
@@ -469,10 +472,10 @@ class Sampler:
         sample_length = int(len(df) * sample_size)
         sample = df.sample(sample_length, random_state=7)
 
-        copy = sample.copy()
-        for col in range(1,13):
-            copy[col] = copy[col+12] - copy[col]
-        sample = copy[[*range(1,13), 'ndvi_pre','dayofyear']]
+        # copy = sample.copy()
+        # for col in range(1,13):
+        #     copy[col] = copy[col+12] - copy[col]
+        # sample = copy[[*range(1,13), 'ndvi_pre','dayofyear']]
         if os.path.exists(f'{self.data_dir}/interim/{sample_filename}.zarr'):
             z = zarr.open(f'{self.data_dir}/interim/{sample_filename}.zarr', mode='a')
             z.append(sample)
