@@ -148,7 +148,7 @@ if UPTO in ['sample', 'prep_data'] or FROM in ['grid', 'backfill', 'download','m
     print("--- Preparing sample..")   
     start = time.time()
     sampler = Sampler(DATA_DIR, f'{DATA_DIR}/interim/masked.tif')
-    sampler.sample_zarr(SAMPLE_SIZE)
+    sampler.sample_zarr(SAMPLE_SIZE, sample_filename="master")
     print(f"#### Sampling Complete in {(time.time() - start)} ####")
     
     
