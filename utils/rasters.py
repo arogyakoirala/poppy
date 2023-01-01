@@ -478,9 +478,9 @@ class Sampler:
         # sample = copy[[*range(1,13), 'ndvi_pre','dayofyear']]
         if os.path.exists(f'{self.data_dir}/interim/master_sample.zarr'):
             z = zarr.open(f'{self.data_dir}/interim/master_sample.zarr', mode='a')
-            z.append(sample)
+            z.append(sample.to_numpy())
         else:
-            zarr.save(f'{self.data_dir}/interim/master_sample.zarr', sample) 
+            zarr.save(f'{self.data_dir}/interim/master_sample.zarr', sample.to_numpy()) 
 
 
     def sample(self, sample_size, sample_filename="sample", full_filename="full", save_full = True):
