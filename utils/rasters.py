@@ -476,11 +476,11 @@ class Sampler:
         # for col in range(1,13):
         #     copy[col] = copy[col+12] - copy[col]
         # sample = copy[[*range(1,13), 'ndvi_pre','dayofyear']]
-        if os.path.exists(f'{self.data_dir}/interim/{sample_filename}.zarr'):
-            z = zarr.open(f'{self.data_dir}/interim/{sample_filename}.zarr', mode='a')
+        if os.path.exists(f'{self.data_dir}/interim/master_sample.zarr'):
+            z = zarr.open(f'{self.data_dir}/interim/master_sample.zarr', mode='a')
             z.append(sample)
         else:
-            zarr.save(f'{self.data_dir}/interim/{sample_filename}.zarr', sample) 
+            zarr.save(f'{self.data_dir}/interim/master_sample.zarr', sample) 
 
 
     def sample(self, sample_size, sample_filename="sample", full_filename="full", save_full = True):
