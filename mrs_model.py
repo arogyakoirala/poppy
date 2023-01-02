@@ -26,7 +26,7 @@ if args.n:
 
 if args.run_id:
     RUN_ID = args.run_id
-    
+
 data = zarr.open(args.zarr)
 
 data = data[:]
@@ -38,7 +38,7 @@ for col in range(0,12):
 data = data[[*range(0,12), 26,'ndvi']]
 data = data[-data['ndvi'].isna()]
 # data.isna()
-data = data[data['ndvi'] > 0.3]
+data = data[data['ndvi'] > 0.0]
 data.columns = data.columns.astype(str)
 
 print(f"Training using {len(data)} pixels")
