@@ -14,6 +14,7 @@ import time
 import multiprocessing as mp
 from time import sleep
 import random
+import pandas as pd
 
 ee.Initialize()
 
@@ -58,6 +59,7 @@ class DatesHelper:
     def extract_best_dates(self):
         start = time.time()
         # Get best date for each tile
+        
         aoi = eeconvert.gdfToFc(gpd.read_file(self.aoi))
         afghanistan = ee.FeatureCollection("FAO/GAUL_SIMPLIFIED_500m/2015/level0").filter("ADM0_NAME == 'Afghanistan'");
         modis = ee.ImageCollection('MODIS/061/MOD13Q1').filter(ee.Filter.date(self.date_range[0], self.date_range[1]));
@@ -176,23 +178,33 @@ class DatesHelper:
             width = band1.shape[1]
             cols, rows = np.meshgrid(np.arange(width), np.arange(height))
             xs, ys = rio.transform.xy(src.transform, rows, cols)
-            lons = np.array(xs)
-            lats = np.array(ys)
+            lons = np.array(xs).flatten().tolist()
+            lats = np.array(ys).flatten().tolist()
 
-            points = gpd.GeoSeries(
-                list(zip(lons.flatten(), lats.flatten()))).map(Point)
+            df = pd.DataFrame({
+                # "id": np.arange(0,len(lons))
+                "lat": lats,
+                "lon": lons
+            })
 
-            # use the feature loop in case shp is multipolygon
-            geoms = points.values
-            features = [i for i in range(len(geoms))]
+            # print(list(zip(lons.flatten(), lats.flatten())))
+            # points = gpd.GeoSeries(
+            #     list(zip(lons.flatten(), lats.flatten()))).map(Point)
 
-            out = gpd.GeoDataFrame(
-                {'feature': features, 'geometry': geoms}, crs=src.crs)
+            # # use the feature loop in case shp is multipolygon
+            # geoms = points.values
+            # features = [i for i in range(len(geoms))]
+
+            # out = gpd.GeoDataFrame(
+            #     {'feature': features, 'geometry': geoms}, crs=src.crs)
+            out = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.lon, df.lat))
+            out = out.set_crs(src.crs)
+            
             out.to_file(f"{MODIS_DIR}/centroids.gpkg", driver="GPKG")
         merged = gpd.read_file(f"{MODIS_DIR}/merged.gpkg")
         centroids = gpd.read_file(f"{MODIS_DIR}/centroids.gpkg")
         centroids = centroids.sjoin(merged, how="inner", predicate='intersects')
-        centroids = centroids[['feature', 'geometry', 'DateCode']]
+        centroids = centroids[['geometry', 'DateCode']]
         print(f"Created Centroids.. - {time.time()-start} sec")
         print(len(centroids))
         
@@ -262,6 +274,3 @@ class DatesHelper:
             else:
                 print(f"#### Missing 0 tiles, proceeding to merge..")
                 complete = True
-        
-        
-        

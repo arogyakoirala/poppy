@@ -1,6 +1,6 @@
 #!/bin/bash
-source /usr/local/anaconda3/condabin/conda
-conda activate poppy-linux
+# source /usr/local/anaconda3/condabin/conda
+# conda activate poppy-linux
 
 while getopts s:o:y:c:m: flag
 do
@@ -23,6 +23,6 @@ for ((i=0; i <= ${#dnq_dirs[@]}-1; i++)); do
     shp_path="$shps/${dnq_dirs[$i]}"
     
     echo $outdir $shp_path
-    python sample.py ${outdir} ${shp_path} --n_cores 1
+    python mrs_multi.py ${outdir} ${shp_path}
 done
 

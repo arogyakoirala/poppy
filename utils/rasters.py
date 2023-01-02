@@ -469,6 +469,7 @@ class Sampler:
         
     def sample_zarr(self, sample_size, sample_filename="sample", full_filename="full", save_full = True):
         df, profile = self._generate_df_from_raster()
+        print("**************", df.columns)
         sample_length = int(len(df) * sample_size)
         sample = df.sample(sample_length, random_state=7)
 
@@ -490,4 +491,3 @@ class Sampler:
         sample.to_pickle(f'{self.data_dir}/interim/{sample_filename}.tgz')
         if save_full:
             df.to_pickle(f'{self.data_dir}/interim/{full_filename}.tgz')
-       
