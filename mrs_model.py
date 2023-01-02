@@ -18,6 +18,8 @@ DATA_DIR = "../data"
 N = 3
 RUN_ID = f"kmeans_{N}"
 
+
+
 if args.data_dir:
     DATA_DIR=args.data_dir
 
@@ -26,6 +28,12 @@ if args.n:
 
 if args.run_id:
     RUN_ID = args.run_id
+
+print(f"""
+   N = {N},
+   DATA_DIR = {DATA_DIR},
+   RUN_ID = {RUN_ID} 
+""")
 
 data = zarr.open(args.zarr)
 
@@ -41,7 +49,9 @@ data = data[-data['ndvi'].isna()]
 data = data[data['ndvi'] > 0.0]
 data.columns = data.columns.astype(str)
 
-print(f"Training using {len(data)} pixels")
+print(f"""
+   Training using {len(data)} pixels
+""")
 
 scaler = StandardScaler()
 scaler.fit(data)
