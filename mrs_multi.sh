@@ -1,6 +1,6 @@
 #!/bin/bash
-# source /usr/local/anaconda3/condabin/conda
-# conda activate poppy-linux
+source /usr/local/anaconda3/condabin/conda
+conda activate poppy-linux
 
 while getopts s:o:y:c:m: flag
 do
