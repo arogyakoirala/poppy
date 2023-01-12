@@ -16,7 +16,6 @@ args = parser.parse_args()
 
 DATA_DIR = "../data"
 N = 3
-RUN_ID = f"kmeans_{N}"
 
 
 
@@ -28,6 +27,8 @@ if args.n:
 
 if args.run_id:
     RUN_ID = args.run_id
+
+RUN_ID = f"kmeans_{N}"
 
 print(f"""
    N = {N},

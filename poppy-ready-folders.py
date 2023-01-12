@@ -1,4 +1,6 @@
 #%%
+
+# python poppy-ready-folders.py /data/tmp/arogya/data_dec20 /data/tmp/arogya/data_dec20/inputs/districts/districts
 import time
 from utils.shapefile import ShapefileHelper
 import os

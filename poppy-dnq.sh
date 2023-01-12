@@ -2,6 +2,8 @@
 source /usr/local/anaconda3/condabin/conda
 conda activate poppy-linux
 
+# nohup poppy-dnq.sh -s /data/tmp/arogya/data_dec20/dnq -o /data/tmp/arogya/data_dec20/dnq_outputs -y 2020 -c 15 -m /data/tmp/arogya/final/models/kmeans_3_2306 > logs/dnq2020.out &
+
 while getopts s:o:y:c:m: flag
 do
     case "${flag}" in
