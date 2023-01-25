@@ -43,22 +43,60 @@ class DataHelper:
         else:
             df.to_pickle(f'{self.data_dir}/interim/data_{label}.tgz')
         
+
+
+class ZarrHelper:
+    def __init__(self, data_dir, raw):
+        self.data_dir = data_dir
+        self.raw = zarr.open(raw)
+        
+    def pre_only(self):
+        return self.raw[[*range(1,13),'ndvi_pre', 'dayofyear']]
+    
+    def post_only(self):
+        return self.raw[[*range(12,25),'ndvi_pre','ndvi_post', 'dayofyear']]
+    
+    def diff_bands(self):
+        copy = self.raw.copy()
+        for col in range(1,13):
+            copy[col] = copy[col+12] - copy[col]
+        return copy[[*range(1,13), 'ndvi_pre','dayofyear']]
+    
+    def diff_all(self):
+        copy = self.raw.copy()
+        for col in range(1,13):
+            copy[col] = copy[col+12] - copy[col]
+        copy['diff_ndvi'] = copy['ndvi_post'] - copy['ndvi_pre']
+        return copy[[*range(1,13), 'ndvi_pre', 'diff_ndvi', 'dayofyear']]
+    
+    def ndvi_and_day(self):
+        return self.raw[['ndvi_pre', 'dayofyear']]
+    
+    def save(self, df, label, filename=None):
+        print(f"------ Saved {label}; Columns: {df.columns}")
+        if filename != None:
+            df.to_pickle(filename)
+        else:
+            df.to_pickle(f'{self.data_dir}/interim/data_{label}.tgz')
+        
+
 class ModelingHelper:
-    def __init__(self, data_dir, raw, run_name):
+    def __init__(self, data_dir, raw, run_name, ndvi_cutoff=0.3):
         self.raw = pd.read_pickle(raw)
         self.data_dir = data_dir
         self.run_name = run_name
+        self.ndvi_cutoff = ndvi_cutoff
         with rasterio.open(f"{self.data_dir}/interim/temp.tif") as src:
             self.profile = src.profile
     
-    def ready_data(self, data):
-        dataset = data[data['ndvi_pre'] > 0.3]
+    def clean(self, data):
+        dataset = data[data['ndvi_pre'] > self.ndvi_cutoff]
         dataset = dataset.loc[~(dataset==0).all(axis=1)]
         dataset.columns = dataset.columns.astype('str')
         return dataset
         
     def fit(self, data, model_type, n, save=True, drop_ndvi=False):
-        clean = self.ready_data(data)
+        clean = self.clean(data)
         scaler = StandardScaler()
         scaler.fit(clean)
         normalised_data = scaler.transform(clean)

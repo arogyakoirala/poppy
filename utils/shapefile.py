@@ -99,16 +99,16 @@ class ShapefileHelper():
         
 #         # clip to boundary
         output = gpd.read_file(self.vector_output_dir + outputGridfn +".shp")
-        print(f"#################### Output Columns: {output.columns}")
+        # print(f"#################### Output Columns: {output.columns}")
         output = output.set_crs("epsg:32642").to_crs(out_crs).reset_index().rename(columns={"index": id_col}).drop('FID', axis=1)
         output = gpd.sjoin(output, self.gdf.to_crs("epsg:4326")).drop('index_right', axis=1)
         if 'grid_id_left' in output.columns:
             output['grid_id'] = output['grid_id_left']
             output = output.drop(['grid_id_left', 'grid_id_right'], axis=1)
-        print(f"#################### Output Columns: {output.columns}")
+        # print(f"#################### Output Columns: {output.columns}")
         self.output = output
         output = gpd.clip(output, self.gdf.to_crs("epsg:4326"))
-        print(output.columns)
+        # print(output.columns)
         output = output.drop(id_col, axis=1).reset_index().drop('index', axis=1).reset_index().rename(columns={'index': id_col})
         if not separate:
             output.to_file(self.vector_output_dir + outputGridfn + ".gpkg", driver='GPKG')
@@ -143,7 +143,7 @@ class ShapefileHelper():
     
     def _clean_dir(self):
         test = os.listdir(self.vector_output_dir)
-        print(test)
+        # print(test)
 
         for item in test:
             if item.endswith(".shp"):
