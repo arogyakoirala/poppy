@@ -20,7 +20,7 @@ ee.Initialize()
 
 
 class DatesHelper:
-    def __init__(self, DATA_DIR, AOI, DATE_RANGE, n_cores = 10,  bypass=False):
+    def __init__(self, DATA_DIR, AOI, DATE_RANGE, n_cores = 1,  bypass=False):
         self.data_dir = DATA_DIR
         self.aoi = AOI
         self.date_range = DATE_RANGE
@@ -56,9 +56,10 @@ class DatesHelper:
           
 
         
-    def extract_best_dates(self):
+    def extract_best_dates(self, grid_path = None):
         start = time.time()
         # Get best date for each tile
+
         
         aoi = eeconvert.gdfToFc(gpd.read_file(self.aoi))
         afghanistan = ee.FeatureCollection("FAO/GAUL_SIMPLIFIED_500m/2015/level0").filter("ADM0_NAME == 'Afghanistan'");
@@ -97,11 +98,11 @@ class DatesHelper:
             self.date_dict[str(i)] = date
             i+=1
         self.date_dict["0"] = -99
-        print(f"Done with MODIS best date calculation.. - {time.time()-start} sec")
+        print(f"-------- Done with MODIS best date calculation..")
         
         # Download modis tiles at parent resolution
         DATA_DIR = self.data_dir
-        MODIS_DIR = f"{self.data_dir}/interim/modis"
+        MODIS_DIR = f"{self.data_dir}/modis"
         self.modis_dir = MODIS_DIR
         if os.path.exists(MODIS_DIR):
             shutil.rmtree(MODIS_DIR)
@@ -110,11 +111,13 @@ class DatesHelper:
         Path(TILE_DIR).mkdir(parents=True, exist_ok=True)
         Path(MODIS_DIR).mkdir(parents=True, exist_ok=True)
         
-        parent= gpd.read_file(f"{self.data_dir}/interim/parent_best_dates.gpkg")        
+        if grid_path is None:
+            grid_path = f"{self.data_dir}/parent.gpkg"
+        parent = gpd.read_file(grid_path)        
         
         if not self.bypass:
             self.download_modis(parent, max_ndvi_image)
-            self.fix_until_complete()    
+            self.fix_until_complete(grid_path=grid_path)    
         
         
         if os.path.exists(f"{MODIS_DIR}/interim/temp.vrt"):
@@ -134,7 +137,7 @@ class DatesHelper:
         os.system(f'find {TILE_DIR}  -maxdepth 1 -name "*.tif" -print0 | xargs -0 gdalbuildvrt -srcnodata "0" {MODIS_DIR}/temp.vrt')
         os.system(f'gdal_merge.py -o {MODIS_DIR}/merged.tif {MODIS_DIR}/temp.vrt')
         
-        print(f"Merged tiles.. - {time.time()-start} sec")
+        print(f"-------- Merged tiles..")
         
         
         # Create shell GDF (workaround because polygonize doesn't uncombine tiles with same value)
@@ -164,13 +167,13 @@ class DatesHelper:
             with rio.open(f'{MODIS_DIR}/shell.tif', 'w', **profile) as dst:
                 dst.write(new_array.astype(rio.uint32), 1)
         
-        print(f"Shell GDF created.. - {time.time()-start} sec")        
+        print(f"-------- Shell GDF created..")        
     
         os.system(f'gdal_polygonize.py {MODIS_DIR}/shell.tif -b 1 -f "GPKG" {MODIS_DIR}/shell.gpkg OUTPUT DateCode')
-        print(f"Polygonized shell.. - {time.time()-start} sec")
+        print(f"-------- Polygonized shell..")
         
         os.system(f'gdal_polygonize.py {MODIS_DIR}/merged.tif -b 1 -f "GPKG" {MODIS_DIR}/merged.gpkg OUTPUT DateCode')
-        print(f"Polygonized merged.. - {time.time()-start} sec")
+        print(f"-------- Polygonized merged..")
         
         with rio.open(f"{MODIS_DIR}/merged.tif") as src:
             band1 = src.read(1)
@@ -205,29 +208,28 @@ class DatesHelper:
         centroids = gpd.read_file(f"{MODIS_DIR}/centroids.gpkg")
         centroids = centroids.sjoin(merged, how="inner", predicate='intersects')
         centroids = centroids[['geometry', 'DateCode']]
-        print(f"Created Centroids.. - {time.time()-start} sec")
-        print(len(centroids))
+        print(f"-------- Created Centroids..")
         
-        child = gpd.read_file(f"{self.data_dir}/interim/child.gpkg")
-        child.to_file(f"{self.data_dir}/interim/child_bkp.gpkg", driver="GPKG")
+        child = gpd.read_file(f"{self.data_dir}/child.gpkg")
+        child.to_file(f"{self.data_dir}/child_bkp.gpkg", driver="GPKG")
         child = child.sjoin(centroids,  how="inner", predicate='intersects') ######################### change to centroids.
         child = child[['DateCode', 'geometry']]
         child['DateCode'] = child['DateCode'].astype(str)
         child = child.replace({"DateCode": self.date_dict})
         child = child.reset_index()
         child.columns = ["grid_id", "BSD", "geometry"]
-        child.to_file(f"{self.data_dir}/interim/child.gpkg", driver="GPKG")
-        child = gpd.read_file(f"{self.data_dir}/interim/child.gpkg")
+        child.to_file(f"{self.data_dir}/child.gpkg", driver="GPKG")
+        child = gpd.read_file(f"{self.data_dir}/child.gpkg")
         child = child[child['BSD'] != "-99"]
         child = child.reset_index()
         child = child[['index', 'BSD', 'geometry']]
         child.columns = ['grid_id', 'BSD', 'geometry']
-        child.to_file(f"{self.data_dir}/interim/child.gpkg", driver="GPKG")
-        print(f"Saved child GDF. Completed! - {time.time()-start} sec")
+        child.to_file(f"{self.data_dir}/child.gpkg", driver="GPKG")
+        print(f"-------- Saved child GDF. Completed!")
     
 #         self.alt_joined = child
         
-#         shell = gpd.read_file(f"{DATA_DIR}/interim/shell.gpkg")
+#         shell = gpd.read_file(f"{DATA_DIR}/shell.gpkg")
 #         joined = shell.sjoin(centroids,  how="inner", predicate='intersects')
 #         child = joined # dev: comment and rename 'joined' to 'child' in line above last
 #         child = child[["DateCode_right", "geometry"]]
@@ -236,15 +238,15 @@ class DatesHelper:
 #         child = child[child['DateCode_right'] != "-99"] # why is this -99?
 #         child = child.reset_index()
 #         child.columns = ["GRID_ID", "BSD", "geometry"]
-#         child.to_file(f"{DATA_DIR}/interim/modis.gpkg", driver="GPKG")
-#         child = gpd.read_file(f"{DATA_DIR}/interim/modis.gpkg")
+#         child.to_file(f"{DATA_DIR}/modis.gpkg", driver="GPKG")
+#         child = gpd.read_file(f"{DATA_DIR}/modis.gpkg")
 # #         print(child.columns)
 #         child = child[child['BSD'] != "-99"]
 #         child = child.reset_index()
 #         child = child[['index', 'BSD', 'geometry']]
 #         child.columns = ['grid_id', 'BSD', 'geometry']
-#         child.to_file(f"{DATA_DIR}/interim/modis.gpkg", driver="GPKG")
-#         print(f"Saved child GDF. Completed! - {time.time()-start} sec")
+#         child.to_file(f"{DATA_DIR}/modis.gpkg", driver="GPKG")
+#         print(f"Saved child GDF. Completed!")
         
         
 #         self.merged = merged
@@ -252,23 +254,26 @@ class DatesHelper:
 # #         self.joined = joined
 #         self.child = child
 
-    def get_missing(self):
-        MODIS_DIR = f"{self.data_dir}/interim/modis"
+    def get_missing(self, grid_path=None):
+        if grid_path is None:
+            grid_path = f"{self.data_dir}/parent.gpkg"
+        MODIS_DIR = f"{self.data_dir}/modis"
         TILES_DIR = MODIS_DIR + "/tiles"
-        parent= gpd.read_file(f"{self.data_dir}/interim/parent_best_dates.gpkg")        
+        parent = gpd.read_file(grid_path)        
         all_ids_ = set(parent['pgrid_id'])
         downloaded_ids_ = set([int(file.split(".tif")[0]) for file in os.listdir(TILES_DIR)])
         missing = list(all_ids_ - downloaded_ids_)
         return missing
         
-    def fix_until_complete(self):
+    def fix_until_complete(self, grid_path=None):
         complete = False
-        
+        if grid_path is None:
+            grid_path = f"{self.data_dir}/parent.gpkg"
         while not complete:
-            missing = self.get_missing()
+            missing = self.get_missing(grid_path)
             if len(missing) > 0:
                 print(f"#### Missing {len(missing)} tiles, redownloading..")
-                parent= gpd.read_file(f"{self.data_dir}/interim/parent_best_dates.gpkg")        
+                parent= gpd.read_file(grid_path)        
 #                 new_parent = parent[parent['pgrid_id'].isin(missing)]
                 self.download_modis(parent, self.max_ndvi_image)
             else:

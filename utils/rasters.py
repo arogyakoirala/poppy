@@ -20,20 +20,25 @@ from shapely.geometry.multipolygon import MultiPolygon
 
 import pandas as pd
 import rasterio
+from rasterio import Affine
+from rasterio.plot import show
+from rasterio.windows import Window
 import matplotlib.pyplot as plt
 from rasterio.mask import mask
 from rasterio import features
 import math, time
 import os
 
-from rasterio import Affine
-from rasterio.plot import show
+
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
 import pickle
 import json 
 import zarr
+
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 ee.Initialize()
 
@@ -180,10 +185,12 @@ class RasterGenerationHelper:
         if not clean:
             self._ready()
             
-    def get_rasters(self):            
+    def get_rasters(self): 
+
+        print(f'-------- Downloading {self.parent.shape[0]} tiles..')           
         if not os.path.isdir(self.raster_output_dir):
             os.makedirs(self.raster_output_dir)
-            print("Created new directory..".format(self.raster_output_dir))
+            print("-------- Created new directory..".format(self.raster_output_dir))
         cpus = self.n_cores
 #         cpus = 6
         parent_chunks = np.array_split(self.parent, cpus)
@@ -261,67 +268,71 @@ class RasterGenerationHelper:
         return int(filename.split(".tif")[0])
     
     def _ready(self):
-        print(list(filter(lambda x: x.endswith(".tif"), os.listdir(self.raster_output_dir))))
+        # print(list(filter(lambda x: x.endswith(".tif"), os.listdir(self.raster_output_dir))))
         
         files = list(map(self._filename_to_ids, list(filter(lambda x: x.endswith(".tif"), os.listdir(self.raster_output_dir)))))
         old_size = self.parent.shape[0]
         self.parent = self.parent[~self.parent['pgrid_id'].isin(files)]
         new_size = self.parent.shape[0]
         
-        print("Ignoring {} tiles as rasters for them are already generated; will only generate rasters for remaining {} tiles".format(old_size - new_size, new_size))
+        print("-------- Ignoring {} tiles as rasters for them are already generated; will only generate rasters for remaining {} tiles".format(old_size - new_size, new_size))
         
         
     def _make_dir(self):
         Path(self.raster_output_dir).mkdir(parents=True, exist_ok=True)
-    
 
 
 
+"""
+MergeRasterSingleAoi(data_dir, shp_path, tiles_path)
+
+Create a merged raster from independent
+tiles, for a given shapefile.
 
 
+
+Assumption: All tiles for the area of 
+interest have been already downloaded
+"""
 class MergeRasterSingleAoi:
     
     def __init__(self, data_dir, shp_path, tiles_path):
         self.shp_path = shp_path
         self.tiles_path = tiles_path
         self.data_dir = data_dir
-        self.raster_out_dir = f"{self.data_dir}/interim"
         
     def merge(self, filename="merged"):
         aoi = gpd.read_file(self.shp_path)
-        parent = gpd.read_file(f"{self.data_dir}/interim/parent.gpkg")
+        parent = gpd.read_file(f"{self.data_dir}/parent.gpkg")
         
-        aoi = gpd.read_file(self.shp_path)
         df = gpd.sjoin(parent, aoi)
-        rasters = list(self.tiles_path+'/' + (df['pgrid_id']).astype('str') + ".tif")
+        rasters = list(self.tiles_path +'/' + (df['pgrid_id']).astype('str') + ".tif")
         
-        temp_dir = f"{self.raster_out_dir}/temp"
+        temp_dir = f"{self.data_dir}/temp"
         
         if os.path.exists(temp_dir):
             shutil.rmtree(temp_dir)
-        
         Path(temp_dir).mkdir(parents=True, exist_ok=True)
         
-        print("HEEEEERE!!", rasters)
         for file in rasters:
             if os.path.exists(file):
-                shutil.copy(file, temp_dir+"/")
+                shutil.copy(file, temp_dir + "/")
+        
+        if os.path.exists(f"{self.data_dir}/{filename}.vrt"):
+            os.remove(f"{self.data_dir}/{filename}.vrt")
+            
+        if os.path.exists(f"{self.data_dir}/{filename}.tif"):
+            os.remove(f"{self.data_dir}/{filename}.tif")
+            
+        os.system(f'gdalbuildvrt {self.data_dir}/{filename}.vrt {temp_dir}/*.tif -srcnodata "0"')
+        os.system(f'gdal_merge.py -o {self.data_dir}/{filename}.tif {self.data_dir}/{filename}.vrt')
+        
 
-        
-        if os.path.exists(f"{self.raster_out_dir}/{filename}.vrt"):
-            os.remove(f"{self.raster_out_dir}/{filename}.vrt")
-            
-        if os.path.exists(f"{self.raster_out_dir}/{filename}.tif"):
-            os.remove(f"{self.raster_out_dir}/{filename}.tif")
-            
-        os.system(f'gdalbuildvrt {self.raster_out_dir}/{filename}.vrt {temp_dir}/*.tif -srcnodata "0"')
-        os.system(f'gdal_merge.py -o {self.raster_out_dir}/{filename}.tif {self.raster_out_dir}/{filename}.vrt')
-        
-        raster = rxr.open_rasterio(f'{self.raster_out_dir}/{filename}.tif').squeeze()
+        raster = rxr.open_rasterio(f'{self.data_dir}/{filename}.tif').squeeze()
         raster = raster.rio.clip(aoi.geometry.apply(mapping), aoi.crs)
-        raster.rio.to_raster(f'{self.raster_out_dir}/{filename}.tif')
+        raster.rio.to_raster(f'{self.data_dir}/{filename}.tif')
         
-        shutil.rmtree(temp_dir)
+        # shutil.rmtree(temp_dir)
         
 class MergeRaster:
     """
@@ -392,9 +403,9 @@ class Masker:
         self.mask_raster = rasterio.open(mask_raster)
         self.data_dir = data_dir
         
-    def mask(self, filename="masked"):
+    def mask(self, filename="masked", gte=30):
         out_img, out_transform = mask(self.mask_raster, shapes=self.input_shp.geometry, crop=True)
-        out_img[out_img == 0.0] = 255
+        out_img[out_img < gte] = 255
         is_valid = (out_img != 255.0).astype(np.uint8)
         cropland = []
         for coords, value in features.shapes(is_valid, transform=out_transform):
@@ -406,10 +417,10 @@ class Masker:
         cropland = gpd.GeoDataFrame(cropland).set_crs("epsg:4326")
         cropland = cropland[cropland['value']==1] # only get a shapefile of cropland
         out_img, out_transform = mask(self.input_raster, cropland.geometry, crop=True)
-        out_img[np.isnan(out_img)] = 0
+        out_img[np.isnan(out_img)] = -99
         out_img = out_img[0:24]
         with rasterio.open(
-            f'{self.data_dir}/interim/{filename}.tif',
+            f'{self.data_dir}/{filename}.tif',
             'w',
             driver='GTiff',
             height=out_img.shape[1],
@@ -419,35 +430,61 @@ class Masker:
             crs=self.input_raster.crs,
             transform=out_transform,
         ) as dst:
+            dst.nodata = -99
             dst.write(out_img[0:24])
 
-
-
 class Sampler:
-    def __init__(self, data_dir, input_raster):
+    def __init__(self, input_raster, interim_dir, out_dir):
         self.input_raster = input_raster
-        self.data_dir = data_dir
-
-        # if os.path.exists(f'{self.data_dir}/interim/master_sample.zarr'):
-        #     shutil.rmtree(f'{self.data_dir}/interim/master_sample.zarr')
+        self.out_dir = out_dir
+        self.interim_dir = interim_dir
         
-    def _add_ndvi(self, df, b8, b4, label):
-        df[label] = (df[b8] - df[b4]) / (df[b8] + df[b4]) 
-        return df
-   
-    def _add_dates(self, df):
-        child_gdf = gpd.read_file(f"{self.data_dir}/interim/child.gpkg")
-        gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.reset_index().x, df.reset_index().y))
-        gdf = gdf.set_crs("epsg:4326").sjoin(child_gdf)
-        gdf = gdf.drop(['grid_id', 'geometry'], axis=1)
-        gdf['dayofyear'] = pd.to_datetime(gdf['BSD']).dt.dayofyear
-        gdf = gdf.drop('BSD', axis=1)
-        gdf = gdf.drop(['index_right'], axis=1)
-        return gdf
+    def sample_zarr(self, sample_size, sample_filename="sample", full_filename="full", save_full = True):
+        df, profile = self._generate_df_from_raster()
+        sample_length = int(len(df) * sample_size)
+        sample = df.sample(sample_length, random_state=7)
+
+        copy = sample.copy()
+        # # Get only relevant columns: lat/lng, differences, ndvi_pre, dayofyear
+
+        full = copy[[*range(1,25), 'ndvi_pre', 'dayofyear', 'ndvi_post']]
+        for col in range(1,13):
+            copy[col] = copy[col+12] - copy[col]
+        sample = copy.reset_index()[['y', 'x', *range(1,13), 'ndvi_pre',  'dayofyear', 'ndvi_post']]
+        
+        # Save pre and post NDVI plots
+        _dir = self.input_raster.split("/")[-1].split(".tif")[0]
+        Path(f"{self.out_dir}/{_dir}_plots").mkdir(exist_ok=True, parents=True)
+        
+        fig, ax = plt.subplots(1,1,figsize=(10,4), dpi=200)
+        sns.histplot(copy['ndvi_pre'], ax = ax)
+        sns.histplot(copy['ndvi_post'], ax = ax)
+        plt.title("NDVI: Pre (blue) and Post (orange)")
+        plt.tight_layout()
+        ax.set(xlabel='NDVI', ylabel='Density')
+        plt.savefig(f'{self.out_dir}/{_dir}_plots/plot_ndvi.png')
+        
+        # Save pre and post raster plots  
+        self.save_images()
+
+        # Save to ZARR
+        if sample_size < 1:
+            if os.path.exists(f'{self.out_dir}/full.zarr'):
+                z = zarr.open(f'{self.out_dir}/full.zarr', mode='a')
+                z.append(full.to_numpy())
+            else:
+                zarr.save(f'{self.out_dir}/full.zarr', full.to_numpy()) 
+
+        if os.path.exists(f'{self.out_dir}/{sample_filename}.zarr'):
+            z = zarr.open(f'{self.out_dir}/{sample_filename}.zarr', mode='a')
+            z.append(sample.to_numpy())
+        else:
+            zarr.save(f'{self.out_dir}/{sample_filename}.zarr', sample.to_numpy()) 
+
 
     def _generate_df_from_raster(self):
         with rasterio.open(self.input_raster) as src:
-            profile = src.profile
+            profile = src.profile                
             
         image = rxr.open_rasterio(self.input_raster)
         df = image.to_dataframe(name="value")
@@ -466,28 +503,50 @@ class Sampler:
         df = self._add_dates(df)
         
         return df, profile
-        
-    def sample_zarr(self, sample_size, sample_filename="sample", full_filename="full", save_full = True):
-        df, profile = self._generate_df_from_raster()
-        print("**************", df.columns)
-        sample_length = int(len(df) * sample_size)
-        sample = df.sample(sample_length, random_state=7)
 
-        # copy = sample.copy()
-        # for col in range(1,13):
-        #     copy[col] = copy[col+12] - copy[col]
-        # sample = copy[[*range(1,13), 'ndvi_pre','dayofyear']]
-        if os.path.exists(f'{self.data_dir}/interim/master_sample.zarr'):
-            z = zarr.open(f'{self.data_dir}/interim/master_sample.zarr', mode='a')
-            z.append(sample.to_numpy())
-        else:
-            zarr.save(f'{self.data_dir}/interim/master_sample.zarr', sample.to_numpy()) 
+    def _add_ndvi(self, df, b8, b4, label):
+        df[label] = (df[b8] - df[b4]) / (df[b8] + df[b4]) 
+        return df
 
+    def _add_dates(self, df):
+        child_gdf = gpd.read_file(f"{self.interim_dir}/child.gpkg")
+        gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.reset_index().x, df.reset_index().y))
+        gdf = gdf.set_crs("epsg:4326").sjoin(child_gdf)
+        gdf = gdf.drop(['grid_id', 'geometry'], axis=1)
+        gdf['dayofyear'] = pd.to_datetime(gdf['BSD']).dt.dayofyear
+        gdf = gdf.drop('BSD', axis=1)
+        gdf = gdf.drop(['index_right'], axis=1)
+        return gdf
 
-    def sample(self, sample_size, sample_filename="sample", full_filename="full", save_full = True):
-        df, profile = self._generate_df_from_raster()
-        sample_length = int(len(df) * sample_size)
-        sample = df.sample(sample_length, random_state=7)
-        sample.to_pickle(f'{self.data_dir}/interim/{sample_filename}.tgz')
-        if save_full:
-            df.to_pickle(f'{self.data_dir}/interim/{full_filename}.tgz')
+    def save_images(self):
+        s = rasterio.open(self.input_raster)
+        x_lb = (s.width//2) - (s.width//4)
+        x_ub = (s.width//2) + (s.width//4)
+        y_lb = (s.height//2) - (s.height//4)
+        y_ub = (s.height//2) + (s.height//4)
+
+        n_images = 5
+        fig, ax = plt.subplots(2,n_images,figsize=(5*n_images,10), dpi=500)
+        ax=ax.flatten()
+
+        _dir = self.input_raster.split("/")[-1].split(".tif")[0]
+        locs = open(f"{self.out_dir}/{_dir}_locs.txt", "a")
+        for i in range(0, n_images):
+            with rasterio.open(self.input_raster) as src:
+                random_x = np.random.randint(x_lb, x_ub)
+                random_y = np.random.randint(y_lb, y_ub)
+                
+                locs.write(f"{random_x},{random_y}\n")
+
+                window = Window(random_x, random_y, 100, 100)
+                pre = src.read((4,3,2), window=window)
+                post = src.read((16,15,14), window=window)
+
+                show(pre, ax=ax[i], adjust=True)
+                show(post, ax=ax[n_images+i],  adjust=True)
+
+                    
+        locs.close()   
+        _dir = self.input_raster.split("/")[-1].split(".tif")[0]
+        plt.savefig(f'{self.out_dir}/{_dir}_plots/plot_prepost.png')
+
