@@ -32,6 +32,11 @@ In this step, we download all the necessary data tpo perform the clustering exer
 ./download.sh -p multi -s /path/to/gpkgs -m path/to/mask.tif -c 3
 ```
 
+Sample code:
+```
+/download.sh -p multi -s ../poppydata/inputs/sample_tiles_small -m ../poppydata/inputs/mask.tif -c 3
+```
+
 Parameters:
 - p: *process* can be 'multi' or 'solo'. If solo, the -s argument will expect a path to a single shapefile. If multi, the -s argument will expect a path to a folder containing multiple shapefiles.
 - s: *shapefile path* the region (or regions) for which we want to perform the clustering exercise. If -p is multi, the -s argument will expect a path to a folder containing multiple shapefiles, else it will expect the path to a single shapefile. All shapefiles must be available in .gpkg format
