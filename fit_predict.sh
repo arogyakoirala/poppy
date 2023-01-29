@@ -1,5 +1,6 @@
-source env2/bin/activate
-# conda activate poppy-linux
+#!/bin/bash
+# source env2/bin/activate
+conda activate poppy-linux
 
 for ARGUMENT in "$@"
 do

@@ -52,17 +52,7 @@ The `fit_predict.sh` file allows:
 
 Run in background:
 ```
-nohup ./fit_predict.sh \
-    model=kmeans \
-    n=3 \
-    mode_in=solo \
-    shp_in=/data/tmp/arogya/inputs/2306.gpkg \ 
-    mask=/data/tmp/arogya/inputs/mask.tif \
-    year=2020 \
-    cores=20 \
-    out=/data/tmp/arogya/results/2308_2020 \
-    shp_out=/data/tmp/arogya/inputs/grids_50km \
-    mode_out=multi > logs/2308_2020.out &
+nohup ./fit_predict.sh model=kmeans n=3 mode_in=solo shp_in=/data/tmp/arogya/inputs/2306.gpkg mask=/data/tmp/arogya/inputs/mask.tif year=2020 cores=20 out=/data/tmp/arogya/results/2308_2020 shp_out=/data/tmp/arogya/inputs/grids_50km mode_out=multi > logs/2308_2020.out &
 ```
 
 <!-- ### Preprocessing Step
