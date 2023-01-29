@@ -8,6 +8,8 @@ parser.add_argument("dir", help="Location of root dir.")
 args = parser.parse_args()
 
 
+
+
 def make_tuple_pair(n, step_size):
     if step_size > n:
         return [(0,n)]
@@ -27,7 +29,9 @@ def make_tuple_pair(n, step_size):
 DIR = args.dir
 dirs = os.listdir(DIR)
 
-os.system(f"rm -rf {DIR}/acc_sample.zarr")
+print(f"Accumulating: {DIR}")
+
+os.system(f"rm -rf {DIR}/sample.zarr")
 
 for _dir in dirs:
     if os.path.exists(f"{DIR}/{_dir}/sample.zarr"):
@@ -35,11 +39,11 @@ for _dir in dirs:
         pairs = make_tuple_pair(f.shape[0], 10000)
         print(f.shape)
         for pair in pairs:
-            if os.path.exists(f'{DIR}/acc_sample.zarr'):
-                z = zarr.open(f'{DIR}/acc_sample.zarr', mode='a')
+            if os.path.exists(f'{DIR}/sample.zarr'):
+                z = zarr.open(f'{DIR}/sample.zarr', mode='a')
                 z.append(f[pair[0]:pair[1]])
             else:
-                zarr.save(f'{DIR}/acc_sample.zarr', f[pair[0]:pair[1]]) 
+                zarr.save(f'{DIR}/sample.zarr', f[pair[0]:pair[1]]) 
 
-print("#### Final sample size: ", zarr.open(f'{DIR}/acc_sample.zarr').shape)
+print("#### Final sample size: ", zarr.open(f'{DIR}/sample.zarr').shape)
 

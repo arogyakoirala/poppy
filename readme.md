@@ -4,8 +4,9 @@ This respository contains code that uses unsupervised learning techniques on Goo
 
 
 ### Clone this repository:
+```
 git clone https://github.com/arogyakoirala/poppy-latest.git
-
+```
 ### Environment setup
 This code requires certain libraries, and we need to make sure these are installed. This section describes how you can do that.
 

@@ -20,15 +20,13 @@ if __name__ == '__main__':
 
     # Inputs
     SHP = None
-    SHP_DIR = None
 
     # Parameters (exposed)
     YEAR = '2019'
     MASK = None
-    OUT_DIR = "out_dl"
-    FORMAT = 'R'
+    OUT_DIR = "out"
     N_CORES = multiprocessing.cpu_count() - 2
-    INTERIM_DIR = "interim_dl"
+    INTERIM_DIR = "interim"
 
     # Parameters (unexposed)
     _RESOLUTION_P = 2500
@@ -55,7 +53,6 @@ if __name__ == '__main__':
 
     if args.format:
         FORMAT = args.format
-
     
     if args.n_cores:
         N_CORES = int(args.n_cores)
@@ -64,6 +61,21 @@ if __name__ == '__main__':
         INTERIM_DIR = args.interim_dir
 
     # print(f"### Using {N_CORES} cores..")
+
+    print(f"""
+
+        Starting download step...
+        
+        Run parameters:
+
+            SHP = {SHP}
+            INTERIM_DIR = {INTERIM_DIR}
+            OUT_DIR = {OUT_DIR}
+            N_CORES = {N_CORES}
+            YEAR = {YEAR}
+            MASK = {MASK} 
+
+    """)
 
 
     from utils.shapefile import ShapefileHelper
@@ -129,9 +141,9 @@ if __name__ == '__main__':
         mrs.merge(filename=shp.split('/')[-1].split('.gpkg')[0])
         print(f"#### Merge complete for {shp}.. | {time.time()-start} sec")
 
-
+        print("###############",MASK, type(MASK))
         # Mask if mask available
-        if MASK is not None:
+        if type(MASK) == 'None':
             print(f"#### Starting masking step for {shp}..")
             masker = Masker(
                 interim_dir, 
@@ -149,6 +161,6 @@ if __name__ == '__main__':
 
         sampler = Sampler(f"{out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
         sampler.sample_zarr(1.0)        
-        shutil.rmtree(interim_dir)
+        os.system(f"rm -rf {interim_dir}")
 
     getBestDatesRaster(SHP, INTERIM_DIR, out_dir=OUT_DIR, n_cores=N_CORES)

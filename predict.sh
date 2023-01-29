@@ -23,7 +23,14 @@ do
     esac
 done
 
-echo $process $shp $model $mask $out $interim $cores $year
+echo $process 
+echo $shp 
+echo $model 
+echo $mask 
+echo $out 
+echo $interim 
+echo $cores 
+echo $year
 
 if [[ $process == 'solo' ]]
 then
@@ -45,6 +52,7 @@ else
         echo "### Staring process for:" $base
         idir="${interim}/${base}"
         odir="${out}/${base}"
+
         if  [[ -n $mask ]]
         then
             python -u predict.py $shp/$base.gpkg $model --out_dir $odir --interim_dir $idir --year $year &

@@ -29,8 +29,7 @@ args = parser.parse_args()
 SHP = args.shp
 MODEL = args.model
 
-INTERIM_DIR = "prediction_interim"
-OUT_INTERIM_DIR = "out_interim"
+INTERIM_DIR = "interim"
 OUT_DIR = "out"
 YEAR = "2019"
 MASK = None
@@ -48,22 +47,39 @@ if args.year:
     YEAR=args.year
 
 
-if os.path.exists(INTERIM_DIR):
-    shutil.rmtree(INTERIM_DIR)
-Path(INTERIM_DIR).mkdir(exist_ok=False, parents=True)
+# if os.path.exists(INTERIM_DIR):
+#     shutil.rmtree(INTERIM_DIR)
+# Path(INTERIM_DIR).mkdir(exist_ok=False, parents=True)
 
-if os.path.exists(OUT_INTERIM_DIR):
-    shutil.rmtree(OUT_INTERIM_DIR)
-Path(OUT_INTERIM_DIR).mkdir(exist_ok=False, parents=True)
+# if os.path.exists(OUT_DIR):
+#     shutil.rmtree(OUT_DIR)
+# Path(OUT_DIR).mkdir(exist_ok=False, parents=True)
         
-if os.path.exists(OUT_DIR):
-    shutil.rmtree(OUT_DIR)
-Path(OUT_DIR).mkdir(exist_ok=True, parents=True)
+# if os.path.exists(OUT_DIR):
+#     shutil.rmtree(OUT_DIR)
+# Path(OUT_DIR).mkdir(exist_ok=True, parents=True)
+
+print(f"""
+
+    Starting prediction step...
+    
+    Run parameters:
+
+        SHP = {SHP}
+        MODEL = {MODEL}
+        INTERIM_DIR = {INTERIM_DIR}
+        OUT_DIR = {OUT_DIR}
+        YEAR = {YEAR}
+        MASK = {MASK} 
+
+""")
+
+print(args)
 
 if MASK is not None:
-    os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_INTERIM_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR}")
+    os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR}")
 else:
-    os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_INTERIM_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR} --mask {MASK}")
+    os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR} --mask {MASK}")
 
 
 with open(f'{MODEL}/run_metadata.txt') as f:
@@ -80,7 +96,7 @@ with open(f"{MODEL}/scaler.pkl", 'rb') as f:
 with open(f"{MODEL}/model.pkl", 'rb') as f:
     model = pickle.load(f)
 
-DATA = f"{OUT_INTERIM_DIR}/sample.zarr"
+DATA = f"{OUT_DIR}/sample.zarr"
 DATA = zarr.open(DATA)[:]
 DATA = DATA[:, :-1]
 X = DATA[:, 2:]
@@ -98,7 +114,7 @@ if TYPE == 'kmeans':
 
     INPUT_RASTER = SHP.split("/")[-1].split(".gpkg")[0]
 
-    with rasterio.open(f"{OUT_INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
+    with rasterio.open(f"{OUT_DIR}/{INPUT_RASTER}.tif") as src:
         profile = src.profile
     crs = profile['crs']
     transform = profile['transform']
@@ -127,7 +143,7 @@ if TYPE == "gmm":
 
     INPUT_RASTER = SHP.split("/")[-1].split(".gpkg")[0]
 
-    with rasterio.open(f"{OUT_INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
+    with rasterio.open(f"{OUT_DIR}/{INPUT_RASTER}.tif") as src:
         profile = src.profile
     crs = profile['crs']
     transform = profile['transform']
@@ -142,7 +158,7 @@ RES_ = RES
 RES = RES.set_index(['y', 'x']).to_xarray()
 RES.cluster.rio.to_raster(f"{OUT_DIR}/predictions.tif")
 
-s = rasterio.open(f"{OUT_INTERIM_DIR}/{INPUT_RASTER}.tif")
+s = rasterio.open(f"{OUT_DIR}/{INPUT_RASTER}.tif")
 x_lb = (s.width//2) - (s.width//4)
 x_ub = (s.width//2) + (s.width//4)
 y_lb = (s.height//2) - (s.height//4)
@@ -155,7 +171,7 @@ ax=ax.flatten()
 for i in range(n_images):
     x = np.random.randint(x_lb, x_ub)
     y = np.random.randint(y_lb, y_ub)
-    with rasterio.open(f"{OUT_INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
+    with rasterio.open(f"{OUT_DIR}/{INPUT_RASTER}.tif") as src:
         window = Window(x, y, 100, 100)
         pre = src.read((4,3,2), window=window)
         post = src.read((16,15,14), window=window)
@@ -187,8 +203,8 @@ plt.savefig(f'{OUT_DIR}/plot_ndvi_dist_{TYPE}_{N}.png')
 
 pd.DataFrame(RES_.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi': 'clustering_ha'}).to_csv(f'{OUT_DIR}/cluster_dist_{TYPE}_{N}.csv')
 
-shutil.rmtree(OUT_INTERIM_DIR)
-shutil.rmtree(PREDICT_INTERIM_DIR)
+# shutil.rmtree(OUT_DIR)
+# shutil.rmtree(INTERIM_DIR)
 
 
 
