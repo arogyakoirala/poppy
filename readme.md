@@ -13,20 +13,59 @@ This code requires certain libraries, and we need to make sure these are install
 
 Step 0: Create a virtual environment (one-time only)
 ```
-venv poppy -r poppy-latest/requirements.txt
+python -u venv poppy -r poppy-latest/requirements.txt
 ```
 
 Step 1: Activate the virtual environment:
 
 ```
 source poppy/bin/activate
-cd poppy-latest
+cd poppy
 ```
 
 IMPORTANT: All of the python code must be run from inside the `poppy-latest` folder. This is true for all examples shown from here on. I will assume that you're in the `poppy-latest` directory and skip all the cd statements going forward.
 
 
-### Preprocessing Step
+# One shot fit and predict step
+
+The `fit_predict.sh` file allows:
+* fitting a user specified unsupervised learning model (model=kmeans or model=gmm), 
+* with the specified number of clusters or components (n=3) 
+* on GEE data for an area corresponding to an input AOI shapefile (mode_in=solo) or multiple AOI shapefiles (mode_in=multi),
+* and the uses the model to predict clusters for an area corresponding to an input AOI shapefile (mode_out=solo) or a directory containing multiple AOI shapefiles (mode_out=multi).
+
+**Usage example**
+
+```
+./fit_predict.sh \
+    model=kmeans \
+    n=3 \
+    mode_in=solo \
+    shp_in=/data/tmp/arogya/inputs/2306.gpkg \ 
+    mask=/data/tmp/arogya/inputs/mask.tif \
+    year=2020 \
+    cores=20 \
+    out=../2308_2020 \
+    shp_out=/data/tmp/arogya/inputs/grids_50km \
+    mode_out=multi
+```
+
+Run in background:
+```
+nohup ./fit_predict.sh \
+    model=kmeans \
+    n=3 \
+    mode_in=solo \
+    shp_in=/data/tmp/arogya/inputs/2306.gpkg \ 
+    mask=/data/tmp/arogya/inputs/mask.tif \
+    year=2020 \
+    cores=20 \
+    out=/data/tmp/arogya/results/2308_2020 \
+    shp_out=/data/tmp/arogya/inputs/grids_50km \
+    mode_out=multi > logs/2308_2020.out &
+```
+
+<!-- ### Preprocessing Step
 In this step, we download all the necessary data tpo perform the clustering exercise on.
 
 ```
@@ -81,4 +120,4 @@ Parameters:
 
 
 
-
+ -->
