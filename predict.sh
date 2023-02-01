@@ -1,28 +1,40 @@
 #!/bin/bash
 # source env2/bin/activate
-conda activate poppy-linux
+# conda activate poppy-linux
 
-process='solo'
-mask=""
-cores="1"
-out="out"
-interim="interim"
-year="2019"
+# process='solo'
+# mask=""
+# cores="1"
+# out="out"
+# interim="interim"
+# year="2019"
 
-while getopts p:s:m:k:o:c:i:y: flag
+# while getopts p:s:m:k:o:c:i:y: flag
+# do
+#     case "${flag}" in
+#         p) process=${OPTARG};;
+#         s) shp=${OPTARG};;
+#         m) model=${OPTARG};;
+#         k) mask=${OPTARG};;
+#         o) out=${OPTARG};;
+#         c) cores=${OPTARG};;
+#         i) interim=${OPTARG};;
+#         y) year=${OPTARG};;
+#     esac
+# done
+
+for ARGUMENT in "$@"
 do
-    case "${flag}" in
-        p) process=${OPTARG};;
-        s) shp=${OPTARG};;
-        m) model=${OPTARG};;
-        k) mask=${OPTARG};;
-        o) out=${OPTARG};;
-        c) cores=${OPTARG};;
-        i) interim=${OPTARG};;
-        y) year=${OPTARG};;
-    esac
-done
+   KEY=$(echo $ARGUMENT | cut -f1 -d=)
 
+   KEY_LENGTH=${#KEY}
+   VALUE="${ARGUMENT:$KEY_LENGTH+1}"
+
+   export "$KEY"="$VALUE"
+done
+echo 
+echo "In predict.sh..."
+echo $model 
 echo $process 
 echo $shp 
 echo $model 
@@ -36,9 +48,9 @@ if [[ $process == 'solo' ]]
 then
     if  [[ -n $mask ]]
     then
-        python -u predict.py $shp $model --out_dir $out --year $year
+        python -u predict.py $shp $model --out_dir $out --year $year --interim_dir $interim
     else
-        python -u predict.py  $shp $model --mask $mask --out_dir $out --year $year
+        python -u predict.py  $shp $model --mask $mask --out_dir $out --year $year --interim_dir $interim
     fi
 else
     N=$cores

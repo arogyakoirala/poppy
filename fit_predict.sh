@@ -1,6 +1,6 @@
 #!/bin/bash
 # source env2/bin/activate
-conda activate poppy-linux
+# conda activate poppy-linux
 
 for ARGUMENT in "$@"
 do
@@ -25,23 +25,38 @@ echo "model = $model"
 echo "n = $n"
 echo "out = $out"
 
+# rm -rf $interim
 
-./download.sh -p $mode_in -s $shp_in -m $mask -c $cores -y $year -o $out
+out_inputs="$out/inputs"
+out_interim="$out/interim"
+out_models="$out/models"
+out_predictions="$out/predictions"
+
+
+
+
+./download.sh process=$mode_in shp=$shp_in mask=$mask cores=$cores year=$year out=$out_inputs interim=$out_interim 
+
 
 if [[ $mode_in == 'multi' ]]
 then
-    python -u accumulate.py $out 
+    rm -rf $out_inputs/sample.zarr
+    python -u accumulate.py $out_inputs 
 fi
 
-f="${out}/sample.zarr"
+mkdir $out_models
+f="${out_inputs}/sample.zarr"
+python -u model.py $f $model $n --out_dir $out_models
+
+
+
+f="${out}/models/model-${model}-${n}"
+rm -rf $out_interim
+mkdir $out_interim
+
 echo $f
-python -u model.py $f $model $n
 
-
-f="${out}/model-${model}-${n}"
-
-./predict.sh -p $mode_out -s $shp_out -m $f -k $mask -c $cores -y $year
-
+./predict.sh process=$mode_out shp=$shp_out model=$f mask=$mask cores=$cores year=$year out=$out_predictions interim=$out_interim
 
 
 

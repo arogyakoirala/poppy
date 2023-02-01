@@ -29,7 +29,7 @@ args = parser.parse_args()
 SHP = args.shp
 MODEL = args.model
 
-INTERIM_DIR = "interim"
+INTERIM_DIR ="interim"
 OUT_DIR = "out"
 YEAR = "2019"
 MASK = None
@@ -46,6 +46,13 @@ if args.mask:
 if args.year:
     YEAR=args.year
 
+
+# idir_split = args.out_dir.rsplit("/", 1)
+# INTERIM_DIR = f"{idir_split[0].join("/")}/{idir_split[1]}_interim"
+
+# if os.path.exists(INTERIM_DIR):
+#     shutil.rmtree(INTERIM_DIR)
+# Path(INTERIM_DIR).mkdir(exist_ok=False, parents=True)    
 
 # if os.path.exists(INTERIM_DIR):
 #     shutil.rmtree(INTERIM_DIR)
@@ -74,7 +81,6 @@ print(f"""
 
 """)
 
-print(args)
 
 if MASK is not None:
     os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR}")
@@ -114,7 +120,7 @@ if TYPE == 'kmeans':
 
     INPUT_RASTER = SHP.split("/")[-1].split(".gpkg")[0]
 
-    with rasterio.open(f"{OUT_DIR}/{INPUT_RASTER}.tif") as src:
+    with rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
         profile = src.profile
     crs = profile['crs']
     transform = profile['transform']
@@ -143,7 +149,7 @@ if TYPE == "gmm":
 
     INPUT_RASTER = SHP.split("/")[-1].split(".gpkg")[0]
 
-    with rasterio.open(f"{OUT_DIR}/{INPUT_RASTER}.tif") as src:
+    with rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
         profile = src.profile
     crs = profile['crs']
     transform = profile['transform']
@@ -158,7 +164,7 @@ RES_ = RES
 RES = RES.set_index(['y', 'x']).to_xarray()
 RES.cluster.rio.to_raster(f"{OUT_DIR}/predictions.tif")
 
-s = rasterio.open(f"{OUT_DIR}/{INPUT_RASTER}.tif")
+s = rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif")
 x_lb = (s.width//2) - (s.width//4)
 x_ub = (s.width//2) + (s.width//4)
 y_lb = (s.height//2) - (s.height//4)
@@ -171,7 +177,7 @@ ax=ax.flatten()
 for i in range(n_images):
     x = np.random.randint(x_lb, x_ub)
     y = np.random.randint(y_lb, y_ub)
-    with rasterio.open(f"{OUT_DIR}/{INPUT_RASTER}.tif") as src:
+    with rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
         window = Window(x, y, 100, 100)
         pre = src.read((4,3,2), window=window)
         post = src.read((16,15,14), window=window)
@@ -208,7 +214,7 @@ pd.DataFrame(RES_.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi'
 
 
 
-
+print(f"QC: Completed prediction process for: {SHP}")
 
 
     
