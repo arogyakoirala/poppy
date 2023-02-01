@@ -1,5 +1,5 @@
 #!/bin/bash
-source env2/bin/activate
+# source env2/bin/activate
 # conda activate poppy-linux
 
 # process='solo'
@@ -48,3 +48,4 @@ else
             python -u download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year &
     done
 fi
+
