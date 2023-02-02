@@ -13,19 +13,26 @@ do
 done
 
 # use here your expected variables
+
+echo "###---#### Starting model fitting and prediction step"
+echo
+echo "Model fitting parameters:"
+echo "mode_in = $mode_in"
 echo "shp_in = $shp_in"
 echo "shp_out = $shp_out"
-echo "mask = $mask"
-echo "mode_in = $mode_in"
-echo "mode_out = $mode_out"
-echo "year = $year"
-echo "cores = $cores"
-echo "sampling_rate = $sampling_rate"
 echo "model = $model"
 echo "n = $n"
+echo
+echo "Prediction step parameters:"
+echo "mode_out = $mode_out"
 echo "out = $out"
+echo
+echo "Common parameters:"
+echo "mask = $mask"
+echo "year = $year"
+echo "cores = $cores"
+echo
 
-# rm -rf $interim
 
 out_inputs="$out/inputs"
 out_interim="$out/interim"
@@ -55,7 +62,7 @@ f="${out}/models/model-${model}-${n}"
 rm -rf $out_interim
 mkdir $out_interim
 
-echo $f
+# echo $f
 
 ./predict.sh process=$mode_out shp=$shp_out model=$f mask=$mask cores=$cores year=$year out=$out_predictions interim=$out_interim
 
@@ -63,61 +70,3 @@ echo "###-----#### Prediction complete"
 
 
 
-
-
-
-
-
-# process='solo'
-# mask=""
-# cores="1"
-# out="out"
-# interim="interim"
-# year="2019"
-# type="kmeans"
-# n_clust="3"
-
-
-
-
-# while getopts p:s:m:c:y:t:n:o: flag
-# do
-#     case "${flag}" in
-#         p) process=${OPTARG};;
-#         s) in=${OPTARG};;
-#         m) mask=${OPTARG};;
-#         c) cores=${OPTARG};;
-#         y) year=${OPTARG};;
-#         t) type=${OPTARG};;
-#         n) n_clust=${OPTARG};;
-#         o) out=${OPTARG};;
-#     esac
-# done
-
-
-
-# if [[ $process == 'solo' ]]
-# then
-#    ./download.sh -p solo -s $shp -m $mask -c $cores -y $year -o $out
-#    python -u model.py $out/sample.zarr $type $n_clust
-#    ./predict.sh -p solo -s $shp -m out/model-kmeans-3 -k $mask -c $cores -y $year
-# else
-#     N=$cores
-#     echo "### Multi mode activated. Number of cores:" $cores
-#     for entry in "$shp"/*
-#     do
-
-#         ((j=j%N)); ((j++==0)) && wait
-#         base=${entry##*/}
-#         base=${base%.*}
-#         echo "### Staring process for:" $base
-#         idir="${interim}/${base}"
-#         odir="${out}/${base}"
-#         if  [[ -n $mask ]]
-#         then
-#             python -u download.py --shp $shp/$base.gpkg --out_dir $odir --interim_dir $idir --n_cores 1 --year $year &
-#         else
-#             python -u download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year &
-#         fi
-#     done
-# fi

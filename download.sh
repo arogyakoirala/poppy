@@ -20,13 +20,13 @@ do
 done
 
 
-echo "shp = $shp"
-echo "out = $out"
-echo "cores = $cores"
-echo "mask = $mask"
-echo "year = $year"
+# echo "shp = $shp"
+# echo "out = $out"
+# echo "cores = $cores"
+# echo "mask = $mask"
+# echo "year = $year"
 
-echo "interim = $interim"
+# echo "interim = $interim"
 
 
 if [[ $process == 'solo' ]]
@@ -34,18 +34,18 @@ then
         python -u download.py --shp $shp --mask $mask --out_dir $out --n_cores $cores --year $year --interim_dir $interim
 else
     N=$cores
-    echo "### Multi mode activated. Number of cores:" $cores
-    for entry in "$shp"/*
+    # for ((i=0; i <= ${#shps[@]}-1; i++));
+    for entry in `ls $shp`;
     do
+
 
         ((j=j%N)); ((j++==0)) && wait
         base=${entry##*/}
         base=${base%.*}
-        echo "### Staring process for:" $base
         idir="${interim}/${base}"
         odir="${out}/${base}"
        
-            python -u download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year &
+        python -u download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year &
     done
 fi
 
