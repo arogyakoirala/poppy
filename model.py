@@ -44,8 +44,10 @@ Path(_MODEL_PATH).mkdir(parents=True, exist_ok=True)
 with open(f'{_MODEL_PATH}/scaler.pkl', 'wb') as f:
     pickle.dump(scaler, f)
 
+print(norm.shape)
+print(norm[~np.isnan(norm).any(axis=1)].shape)
 
-print(np.any(np.isnan(norm)))
+norm = norm[~np.isnan(norm).any(axis=1)]
 
 if MODEL=='kmeans':
     model = KMeans(n_clusters=N)
