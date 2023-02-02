@@ -105,11 +105,11 @@ with open(f"{MODEL}/model.pkl", 'rb') as f:
 DATA = f"{OUT_DIR}/sample.zarr"
 DATA = zarr.open(DATA)[:]
 DATA = DATA[:, :-1]
+DATA = DATA[~np.isnan(DATA).any(axis=1)]
+
 X = DATA[:, 2:]
 
 NORM = scaler.transform(X)
-NORM = NORM[~np.isnan(NORM).any(axis=1)]
-
 
 if TYPE == 'kmeans':
     PREDS = model.predict(NORM)
