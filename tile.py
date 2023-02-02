@@ -15,7 +15,7 @@ from utils.shapefile import ShapefileHelper
 Path(args.out).mkdir(parents=True, exist_ok=True)
 
 sh = ShapefileHelper(args.shp, args.out)
-sh.make_grid(10000, "grid");
+sh.make_grid(40000, "grid");
 
 
 GRID_PATH = f"{args.out}/grid.gpkg"
