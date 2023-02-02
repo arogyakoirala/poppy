@@ -14,6 +14,9 @@ done
 
 # use here your expected variables
 
+echo
+echo
+echo
 echo "###---#### Starting model fitting and prediction step"
 echo
 echo "Model fitting parameters:"
