@@ -45,6 +45,8 @@ with open(f'{_MODEL_PATH}/scaler.pkl', 'wb') as f:
     pickle.dump(scaler, f)
 
 
+print(np.any(np.isnan(norm)))
+
 if MODEL=='kmeans':
     model = KMeans(n_clusters=N)
     model.fit(norm)
