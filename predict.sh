@@ -63,13 +63,11 @@ else
         base=${base%.*}
         idir="${interim}/${base}"
         odir="${out}/${base}"
-
-        # if  [[ -n $mask ]]
-        # then
-        #     python -u predict.py $shp/$base.gpkg $model --out_dir $odir --interim_dir $idir --year $year &
-        # else
+        
         echo $mask
         python -u predict.py $shp/$base.gpkg $model --mask $mask --out_dir $odir --interim_dir $idir --year $year &
-        # fi
     done
+
 fi
+
+touch .__predict

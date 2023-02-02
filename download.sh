@@ -37,15 +37,17 @@ else
     # for ((i=0; i <= ${#shps[@]}-1; i++));
     for entry in `ls $shp`;
     do
-
-
+        
         ((j=j%N)); ((j++==0)) && wait
+        # echo "&&&&&&&&&&&&&&&&&&&" $entry
         base=${entry##*/}
         base=${base%.*}
         idir="${interim}/${base}"
         odir="${out}/${base}"
-       
         python -u download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year &
     done
 fi
 
+# echo "&&&&&&&&&&&&&&&&&&& Download complete" $entry
+wait
+touch .__download
