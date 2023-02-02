@@ -36,19 +36,20 @@ out_predictions="$out/predictions"
 
 
 ./download.sh process=$mode_in shp=$shp_in mask=$mask cores=$cores year=$year out=$out_inputs interim=$out_interim 
-
+echo "###-----#### Downloaded sample for modeling"
 
 if [[ $mode_in == 'multi' ]]
 then
     rm -rf $out_inputs/sample.zarr
     python -u accumulate.py $out_inputs 
+    echo "###-----#### All samples accumulated"
 fi
+
 
 mkdir $out_models
 f="${out_inputs}/sample.zarr"
 python -u model.py $f $model $n --out_dir $out_models
-
-
+echo "###-----#### Modeling complete"
 
 f="${out}/models/model-${model}-${n}"
 rm -rf $out_interim
@@ -57,6 +58,8 @@ mkdir $out_interim
 echo $f
 
 ./predict.sh process=$mode_out shp=$shp_out model=$f mask=$mask cores=$cores year=$year out=$out_predictions interim=$out_interim
+
+echo "###-----#### Prediction complete"
 
 
 
