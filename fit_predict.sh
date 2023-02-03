@@ -48,12 +48,6 @@ rm -rf .__download
 ./download.sh process=$mode_in shp=$shp_in mask=$mask cores=$cores year=$year out=$out_inputs interim=$out_interim 
 echo "###-----#### Downloaded sample for modeling"
 
-# until [ -e .__download ]; do
-#     echo ".__download doesn't exist as of yet..."
-#     sleep 1
-# done
-
-# wait
 
 if [[ $mode_in == 'multi' ]]
 then

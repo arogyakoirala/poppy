@@ -82,11 +82,14 @@ print(f"""
 """)
 
 
-if MASK is not None:
-    os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR}")
-else:
-    os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR} --mask {MASK}")
+# if MASK is not None:
+#     os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR}")
+# else:
+os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR} --mask {MASK}")
 
+
+def compute_euclidean(x, y):
+    return np.sqrt(np.sum((x-y)**2))
 
 with open(f'{MODEL}/run_metadata.txt') as f:
     lines = f.readlines()
@@ -111,14 +114,34 @@ X = DATA[:, 2:]
 
 NORM = scaler.transform(X)
 
+def getDistances(a, b):
+    aSumSquare = np.sum(np.square(a),axis=1)
+    bSumSquare = np.sum(np.square(b),axis=1)
+    mul = np.dot(a,b.T)
+    dists = np.sqrt(aSumSquare[:,np.newaxis]+bSumSquare-2*mul)
+    return dists
+
 if TYPE == 'kmeans':
+    CENTROIDS =  model.cluster_centers_
+    DISTANCES = getDistances(NORM, CENTROIDS)
+    # print("^^^^^DISTANCES", DISTANCES)
+    # print("^^^^^DISTANCES-SHAPE", DISTANCES.shape)
+
+    _n = NORM.shape[1]
+    _1_by_d = (1/DISTANCES)**(_n-1)
+    _sigma_term = np.sum(_1_by_d, axis=1)
+    _sigma_term = _sigma_term.reshape(_sigma_term.shape[0], 1)
+    print(_sigma_term)
+    SCORES = np.divide(_1_by_d,_sigma_term)
+    # print("^^^^^SCORES-SHAPE", SCORES)
+
     PREDS = model.predict(NORM)
     PREDS = np.array(PREDS)
     PREDS = PREDS.reshape(PREDS.shape[0], 1)
 
     RES = DATA[:, [0,1,14]]
-    RES = np.hstack((RES, PREDS))
-    RES = pd.DataFrame(RES, columns = ['y','x','ndvi','cluster'])
+    RES = np.hstack((RES, PREDS, DISTANCES, SCORES))
+    RES = pd.DataFrame(RES, columns = ['y','x','ndvi','cluster', "dist_centroid_0", "dist_centroid_1", "dist_centroid_2", "score_centroid_0",  "score_centroid_1",  "score_centroid_2"])
 
     INPUT_RASTER = SHP.split("/")[-1].split(".gpkg")[0]
 
@@ -130,6 +153,9 @@ if TYPE == 'kmeans':
     RES = RES.drop_duplicates(subset=['y', 'x'])
     RES = RES.sort_values(['y', 'x'], ascending=False)
     # RES = RES.set_coords(['x', 'y'])
+
+
+    
 
 if TYPE == "gmm":
     PREDS = model.predict_proba(NORM)
@@ -165,6 +191,13 @@ if TYPE == "gmm":
 RES_ = RES
 RES = RES.set_index(['y', 'x']).to_xarray()
 RES.cluster.rio.to_raster(f"{OUT_DIR}/predictions.tif")
+RES.dist_centroid_0.rio.to_raster(f"{OUT_DIR}/dist_0.tif")
+RES.dist_centroid_1.rio.to_raster(f"{OUT_DIR}/dist_1.tif")
+RES.dist_centroid_2.rio.to_raster(f"{OUT_DIR}/dist_2.tif")
+RES.score_centroid_0.rio.to_raster(f"{OUT_DIR}/score_0.tif")
+RES.score_centroid_1.rio.to_raster(f"{OUT_DIR}/score_1.tif")
+RES.score_centroid_2.rio.to_raster(f"{OUT_DIR}/score_2.tif")
+
 
 s = rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif")
 x_lb = (s.width//2) - (s.width//4)
@@ -209,11 +242,18 @@ plt.tight_layout()
 plt.savefig(f'{OUT_DIR}/plot_ndvi_dist_{TYPE}_{N}.png')
 
 
-pd.DataFrame(RES_.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi': 'clustering_ha'}).to_csv(f'{OUT_DIR}/cluster_dist_{TYPE}_{N}.csv')
-
+RESULTS = pd.DataFrame(RES_.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi': 'clustering_ha'})
+RESULTS.to_csv(f'{OUT_DIR}/cluster_dist_{TYPE}_{N}.csv')
 # shutil.rmtree(OUT_DIR)
 # shutil.rmtree(INTERIM_DIR)
 
+
+for i in range(N):
+    for j in np.linspace(0,1,6):
+        RESULTS = pd.DataFrame(RES_)
+        RESULTS = RESULTS[RESULTS[f"score_centroid_{i}"]>=j]
+        RESULTS = pd.DataFrame(RESULTS.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi': 'clustering_ha'})
+        RESULTS.to_csv(f'{OUT_DIR}/{TYPE}_{N}_K_{i}_dist_score_gte_{int(np.round(j*100))}.csv')
 
 
 print(f"QC: Completed prediction process for: {SHP}")
