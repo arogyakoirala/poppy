@@ -27,6 +27,7 @@ if __name__ == '__main__':
     OUT_DIR = "out"
     N_CORES = multiprocessing.cpu_count() - 2
     INTERIM_DIR = "../2308_interim"
+    CROP_PROBA=80
 
     # Parameters (unexposed)
     _RESOLUTION_P = 2500
@@ -112,7 +113,7 @@ if __name__ == '__main__':
             n_cores=n_cores, 
             bypass=False
         ) 
-        bd.extract_best_dates(grid_path = f'{interim_dir}/bdg.gpkg')
+        bd.extract_best_dates(grid_path = f'{interim_dir}/bdg.gpkg', mask_tif=MASK, crop_proba=CROP_PROBA)
         print(f"#### Best dates calculation completed for {shp}.. | {time.time()-start} sec")
 
         
@@ -151,7 +152,7 @@ if __name__ == '__main__':
                 f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif",
                 MASK
             )
-            masker.mask(filename=shp.split('/')[-1].split('.gpkg')[0], gte=60)
+            masker.mask(filename=shp.split('/')[-1].split('.gpkg')[0], gte=CROP_PROBA)
             print(f"#### Masking complete for {shp}.. | {time.time()-start} sec")
 
         Path(f"{out_dir}/{shp.split('.gpkg')[0]}").mkdir(parents=True, exist_ok=True)

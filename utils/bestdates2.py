@@ -4,7 +4,6 @@ import geemap
 import geopandas as gpd
 import rasterio as rio
 import numpy as np
-import rasterio.features as features
 from pathlib import Path
 import os
 import shutil
@@ -15,6 +14,12 @@ import multiprocessing as mp
 from time import sleep
 import random
 import pandas as pd
+
+from scipy import stats as st
+from rasterio.mask import mask
+from rasterio import features
+from shapely.geometry import mapping, shape
+
 
 ee.Initialize()
 
@@ -56,7 +61,7 @@ class DatesHelper:
           
 
         
-    def extract_best_dates(self, grid_path = None):
+    def extract_best_dates(self, mask_tif=None, crop_proba=80, grid_path = None):
         start = time.time()
         # Get best date for each tile
 
@@ -224,9 +229,30 @@ class DatesHelper:
         child = child.reset_index()
         child = child[['index', 'BSD', 'geometry']]
         child.columns = ['grid_id', 'BSD', 'geometry']
+
+
+        if mask_tif is not None:
+            mask_raster = rio.open(mask_tif)
+            print("++++++++++++",mask_raster)
+            out_img, out_transform = mask(mask_raster, shapes=child.geometry, crop=True)
+            out_img[out_img == 255] = 0
+            is_valid = (out_img > crop_proba).astype(np.uint8)
+
+            cropland = []
+            for coords, value in features.shapes(is_valid, transform=out_transform):
+                geom = shape(coords)
+                cropland.append({"geometry": geom, "value" : value})
+
+            cropland = gpd.GeoDataFrame(cropland).set_crs("epsg:4326")
+            cropland = cropland[cropland['value']==1]
+
+            joined = child.sjoin(cropland)
+            modal_date = st.mode(joined[['BSD']].to_numpy().squeeze())[0][0]
+            child['BSD'] = modal_date
+
         child.to_file(f"{self.data_dir}/child.gpkg", driver="GPKG")
+        
         print(f"-------- Saved child GDF. Completed!")
-    
 #         self.alt_joined = child
         
 #         shell = gpd.read_file(f"{DATA_DIR}/shell.gpkg")

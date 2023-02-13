@@ -403,7 +403,7 @@ class Masker:
         self.mask_raster = rasterio.open(mask_raster)
         self.data_dir = data_dir
         
-    def mask(self, filename="masked", gte=30):
+    def mask(self, filename="masked", gte=80):
         out_img, out_transform = mask(self.mask_raster, shapes=self.input_shp.geometry, crop=True)
         out_img[out_img < gte] = 255
         is_valid = (out_img != 255.0).astype(np.uint8)
