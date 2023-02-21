@@ -297,25 +297,72 @@ Wv=torch.tensor(nn.Linear(self.input_embedding_size, self.input_embedding_size))
 
 
 
-[
- /data/tmp/arogya/inputs/grids_50km/2308_3.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2302_0.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2312_0.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2303_1.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2306_1.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2304_0.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2407_1.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2601_1.gpkg,
- /data/tmp/arogya/inputs/grids_50km/1905_1.gpkg,
- /data/tmp/arogya/inputs/grids_50km/1906_2.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2105_0.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2311_6.gpkg,
- /data/tmp/arogya/inputs/grids_50km/1903_2.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2307_3.gpkg,
- /data/tmp/arogya/inputs/grids_50km/1904_3.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2313_8.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2111_0.gpkg,
- /data/tmp/arogya/inputs/grids_50km/2416_0.gpkg,
- /data/tmp/arogya/inputs/grids_50km/1115_0.gpkg,
- /data/tmp/arogya/inputs/grids_50km/1606_0.gpkg'
- ]
+
+cp /data/tmp/arogya/inputs/grids_50km/2308* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2302* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2312* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2303* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2306* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2304* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2407* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2601* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/1905* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/1906* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2105* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2311* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/1903* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2307* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/1904* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2313* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2111* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/2416* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/1115* /data/tmp/arogya/inputs/HFPdistricts2020/
+cp /data/tmp/arogya/inputs/grids_50km/1606* /data/tmp/arogya/inputs/HFPdistricts2020/
+
+
+
+# 2019
+
+cp /data/tmp/arogya/inputs/grids_50km/2308* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2302* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2312* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2303* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2306* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2304* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2407* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2601* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/1905* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2605* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/1906* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2307* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/1608* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2105* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2311* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2111* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2416* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/1606* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/1607* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+cp /data/tmp/arogya/inputs/grids_50km/2106* /data/tmp/arogya/inputs/HFPdistricts2019/ 
+
+
+nohup ./fit_predict.sh model=kmeans n=3 mode_in=multi shp_in=/data/tmp/arogya/inputs/HFPgrids2020 mask=/data/tmp/arogya/inputs/mask.tif year=2020 cores=20 out=/data/tmp/arogya/results/HFPgrids2020 shp_out=/data/tmp/arogya/inputs/HFPdistricts2020 mode_out=multi > logs/HFPgrids2020.out &
+
+
+## to run
+nohup ./fit_predict.sh model=kmeans n=3 mode_in=multi shp_in=/data/tmp/arogya/inputs/HFPgrids2019 mask=/data/tmp/arogya/inputs/mask.tif year=2019 cores=20 out=/data/tmp/arogya/results/HFPgrids2019 shp_out=/data/tmp/arogya/inputs/HFPdistricts2019 mode_out=multi > logs/HFPgrids2019.out &
+
+
+
+./fit_predict.sh mode_in=multi shp_in=../data/poppydata/inputs/roa_nontiled mask=../data/poppydata/inputs/mask.tif year=2020 cores=6
+model=kmeans n=3 out=../data/poppydata/roamrs_2020 shp_out=../data/poppydata/inputs/roa_nontiled mode_out=multi
+
+
+./fit_predict.sh mode_in=multi shp_in=../data/poppydata/inputs/roa_nontiled mask=../data/poppydata/inputs/mask.tif year=2020 cores=6 model=kmeans n=3 out=../data/poppydata/roa_nontiled2020 shp_out=../data/poppydata/inputs/roa_nontiled mode_out=multi
+
+
+nohup ./fit_predict.sh model=kmeans n=3 mode_in=solo shp_in=/data/tmp/arogya/inputs/aoi.gpkg mask=/data/tmp/arogya/inputs/mask.tif year=2020 cores=20 out=/data/tmp/arogya/results/aoimodal2020 shp_out=/data/tmp/arogya/inputs/grids_50km mode_out=multi > logs/aoimodal2020.out &
+
+nohup ./fit_predict.sh model=kmeans n=3 mode_in=solo shp_in=/data/tmp/arogya/inputs/aoi.gpkg mask=/data/tmp/arogya/inputs/mask.tif year=2020 cores=20 out=/data/tmp/arogya/results/aoimodal2020 shp_out=/data/tmp/arogya/inputs/grids_50km mode_out=multi > logs/aoimodal2020.out &
+
+
+nohup ./predict.sh process=multi shp=/data/tmp/arogya/inputs/incomplete_aoimodal model=/data/tmp/arogya/results/aoimodal2020/models/model-kmeans-3/ mask=/data/tmp/arogya/inputs/mask.tif cores=15 year=2020 out=/data/tmp/arogya/results/aoimodal2020_missing/predictions interim=/data/tmp/arogya/results/aoimodal2020_missing/interim > logs/aoimodal2020_missing.out &

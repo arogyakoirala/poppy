@@ -114,6 +114,8 @@ X = DATA[:, 2:]
 
 NORM = scaler.transform(X)
 
+np.random.seed(42)
+
 def getDistances(a, b):
     aSumSquare = np.sum(np.square(a),axis=1)
     bSumSquare = np.sum(np.square(b),axis=1)
@@ -131,11 +133,11 @@ if TYPE == 'kmeans':
     _1_by_d = (1/DISTANCES)**(_n-1)
     _sigma_term = np.sum(_1_by_d, axis=1)
     _sigma_term = _sigma_term.reshape(_sigma_term.shape[0], 1)
-    print(_sigma_term)
+    # print(_sigma_term)
     SCORES = np.divide(_1_by_d,_sigma_term)
     # print("^^^^^SCORES-SHAPE", SCORES)
 
-    PREDS = model.predict(NORM)
+    PREDS = model.predict(NORM) + 1
     PREDS = np.array(PREDS)
     PREDS = PREDS.reshape(PREDS.shape[0], 1)
 

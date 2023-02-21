@@ -27,7 +27,7 @@ if __name__ == '__main__':
     OUT_DIR = "out"
     N_CORES = multiprocessing.cpu_count() - 2
     INTERIM_DIR = "../2308_interim"
-    CROP_PROBA=80
+    CROP_PROBA=70
 
     # Parameters (unexposed)
     _RESOLUTION_P = 2500

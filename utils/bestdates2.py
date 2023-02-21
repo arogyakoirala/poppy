@@ -248,7 +248,13 @@ class DatesHelper:
 
             joined = child.sjoin(cropland)
             modal_date = st.mode(joined[['BSD']].to_numpy().squeeze())[0][0]
-            child['BSD'] = modal_date
+            print("modal_date:", modal_date)
+            all_dates = sorted(list(np.unique(joined['BSD'])))
+
+            print("all_dates:",all_dates)
+            new_bsd = all_dates[all_dates.index(modal_date)]
+            print("new_best_date:", new_bsd)
+            child['BSD'] = new_bsd
 
         child.to_file(f"{self.data_dir}/child.gpkg", driver="GPKG")
         
