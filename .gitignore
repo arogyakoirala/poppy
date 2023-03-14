@@ -5,4 +5,5 @@ __pycache__
 outputs/
 out/
 interim/
+poppy-env/
 __pycache__

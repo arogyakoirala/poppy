@@ -61,6 +61,11 @@ mkdir $out_models
 f="${out_inputs}/sample.zarr"
 python -u model.py $f $model $n --out_dir $out_models
 echo "###-----#### Modeling complete"
+echo 
+
+time=$(date "+%Y.%m.%d-%H.%M.%S")
+
+echo $time >>  $out_models/COMPLETED
 
 f="${out}/models/model-${model}-${n}"
 rm -rf $out_interim
