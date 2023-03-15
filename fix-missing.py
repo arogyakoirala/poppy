@@ -6,7 +6,7 @@ parser.add_argument("dir", help="Location of out dir to check")
 args = parser.parse_args()
 
 
-DIR = args.out_dir
+DIR = args.dir
 
 dirs = os.listdir(DIR)
 print(f"Found {len(dirs)} directories.")
