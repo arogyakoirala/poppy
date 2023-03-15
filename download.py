@@ -14,7 +14,6 @@ if __name__ == '__main__':
     parser.add_argument("--shp", help="Shapefile path")
     parser.add_argument("--out_dir", help="Directory to store outputs")
     parser.add_argument("--n_cores", help="Number of cores")
-    parser.add_argument("--format", help="One of 'R' (raster) or 'Z' (zarr)")
     parser.add_argument("--interim_dir", help="One of 'R' (raster) or 'Z' (zarr)")
     args = parser.parse_args()
 

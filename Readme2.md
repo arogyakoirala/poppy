@@ -41,10 +41,18 @@ This script takes in the following parameters.
 
     Since we are dealing with multiple shapefiles, we are going to use mode='multi'.
 - `mask`: Path to mask.tif
-- `out_dir`: Path to where outputs will be stored
-- `n_cores`: The number of cores to use. Stick to 1 for now. In _fati_, we can use something like 20.
+- `out`: Path to where outputs will be stored
+- `interim`: Path to interim directory (will store intermediate files)
+- `cores`: The number of cores to use. Stick to 1 for now. In _fati_, we can use something like 20.
 
 
 ```
-./download.sh year=2019 mode=multi shp=data/tiled mask=data/mask.tif out_dir=data/rasters n_cores=1
+./download.sh year=2019 mode=multi shp=data/tiled mask=data/mask.tif out=data/rasters/interim interim=data/rasters/out n_cores=1
 ```
+
+# Accumulating missing tiles
+
+This is important to ensure all tiles are downloaded. It simply checks the `data/rasters/out` forlder to see if every "*.tif" is generated. If missing, it re-runs the download step one more time for the missing district.
+
+
+
