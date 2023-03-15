@@ -233,7 +233,6 @@ class DatesHelper:
 
         if mask_tif is not None:
             mask_raster = rio.open(mask_tif)
-            print("++++++++++++",mask_raster)
             out_img, out_transform = mask(mask_raster, shapes=child.geometry, crop=True)
             out_img[out_img == 255] = 0
             is_valid = (out_img > crop_proba).astype(np.uint8)
@@ -259,32 +258,7 @@ class DatesHelper:
         child.to_file(f"{self.data_dir}/child.gpkg", driver="GPKG")
         
         print(f"-------- Saved child GDF. Completed!")
-#         self.alt_joined = child
-        
-#         shell = gpd.read_file(f"{DATA_DIR}/shell.gpkg")
-#         joined = shell.sjoin(centroids,  how="inner", predicate='intersects')
-#         child = joined # dev: comment and rename 'joined' to 'child' in line above last
-#         child = child[["DateCode_right", "geometry"]]
-#         child['DateCode_right'] = child['DateCode_right'].astype(str)
-#         child = child.replace({"DateCode_right": self.date_dict})
-#         child = child[child['DateCode_right'] != "-99"] # why is this -99?
-#         child = child.reset_index()
-#         child.columns = ["GRID_ID", "BSD", "geometry"]
-#         child.to_file(f"{DATA_DIR}/modis.gpkg", driver="GPKG")
-#         child = gpd.read_file(f"{DATA_DIR}/modis.gpkg")
-# #         print(child.columns)
-#         child = child[child['BSD'] != "-99"]
-#         child = child.reset_index()
-#         child = child[['index', 'BSD', 'geometry']]
-#         child.columns = ['grid_id', 'BSD', 'geometry']
-#         child.to_file(f"{DATA_DIR}/modis.gpkg", driver="GPKG")
-#         print(f"Saved child GDF. Completed!")
-        
-        
-#         self.merged = merged
-#         self.centroids = centroids
-# #         self.joined = joined
-#         self.child = child
+
 
     def get_missing(self, grid_path=None):
         if grid_path is None:

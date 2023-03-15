@@ -15,6 +15,7 @@ if __name__ == '__main__':
     parser.add_argument("--out_dir", help="Directory to store outputs")
     parser.add_argument("--n_cores", help="Number of cores")
     parser.add_argument("--interim_dir", help="One of 'R' (raster) or 'Z' (zarr)")
+    parser.add_argument("--crop_proba", help="Crop Probability for masking")
     args = parser.parse_args()
 
     # Inputs
@@ -31,7 +32,7 @@ if __name__ == '__main__':
     # Parameters (unexposed)
     _RESOLUTION_P = 2500
     _RESOLUTION_C = 250
-    _POST_PERIOD_DAYS = [30, 45]
+    _POST_PERIOD_DAYS = [25, 40]
 
     # Parameters (derived)
     _TILE_OUTPUT_DIR = f'{INTERIM_DIR}/tiles'
@@ -51,11 +52,14 @@ if __name__ == '__main__':
     if args.out_dir:
         OUT_DIR = args.out_dir
 
-    if args.format:
-        FORMAT = args.format
+    # if args.format:
+    #     FORMAT = args.format
     
     if args.n_cores:
         N_CORES = int(args.n_cores)
+    
+    if args.crop_proba:
+        CROP_PROBA = int(args.crop_proba)
 
     if args.interim_dir:
         INTERIM_DIR = args.interim_dir
@@ -162,6 +166,7 @@ if __name__ == '__main__':
 
         sampler = Sampler(f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
         sampler.sample_zarr(1.0)        
-        # os.system(f"rm -rf {interim_dir}")
-
+        f = open(f"{out_dir}/status.log", "a")
+        f.write(f"Completed raster generation for {shp} in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
+        f.close()
     getBestDatesRaster(SHP, INTERIM_DIR, out_dir=OUT_DIR, n_cores=N_CORES)

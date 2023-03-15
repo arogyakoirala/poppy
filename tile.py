@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 import geopandas as gpd
 import os
+import shutil
 
 parser = argparse.ArgumentParser()
 parser.add_argument("shp", help="SHP")
@@ -32,4 +33,8 @@ for i, tile in grid.iterrows():
     temp = temp.set_crs("epsg:4326")
     temp.to_file(f'{args.out_dir}/{temp.iloc[0][0]}.gpkg')
 
+parent = Path(args.out_dir).parent.absolute()
+src = f"{args.out_dir}/grid.gpkg"
+dst = f"{parent}/grid.gpkg"
+shutil.copy(src, dst)
 os.remove(f"{args.out_dir}/grid.gpkg")

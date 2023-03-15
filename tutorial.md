@@ -7,7 +7,7 @@ Create a folder called data in the project home directory.
 mkdir data
 ```
 
-Download and copy the following files in the `data` directory: [aoi.gpkg](httphttps://drive.google.com/file/d/1b8xTMqZ0HrP3_m13v5AHJGdFT5xQtFoF/view?usp=share_link), [mask.tif](https://drive.google.com/file/d/1wJVfKi8ZV8WhVFoNTQ87YWFYrCfVzWgH/view?usp=sharing)
+Download and copy the following files in the `data` directory: [sample.gpkg](https://drive.google.com/file/d/1jhFYw5HF0avgVqRGQL-05dvq_aYGfZXQ/view?usp=share_link), [mask.tif](https://drive.google.com/file/d/1wJVfKi8ZV8WhVFoNTQ87YWFYrCfVzWgH/view?usp=sharing)
 
 
 # Tiling shapefile
@@ -23,7 +23,7 @@ This takes in the following parameters:
 - `resolution`: What resolution(in meters) do we want to generate the tiles in?
 
 ```
-python tile.py data/aoi.gpkg data/tiled --resolution 5000
+python tile.py data/sample.gpkg data/tiled --resolution 5000
 ```
 
 This will create a new folder called `tiled` inside the `data` folder, containing 11 different shapefiles named 0.gpkg, 1.gpkg, ..., 11.gpkg
@@ -44,15 +44,16 @@ This script takes in the following parameters.
 - `out`: Path to where outputs will be stored
 - `interim`: Path to interim directory (will store intermediate files)
 - `cores`: The number of cores to use. Stick to 1 for now. In _fati_, we can use something like 20.
+- `logs`: The directory where we want to store log files.
 
 
 ```
-./download.sh year=2019 mode=multi shp=data/tiled mask=data/mask.tif out=data/rasters/interim interim=data/rasters/out n_cores=1
+./download.sh year=2019 mode=multi shp=data/tiled mask=data/mask.tif out=data/rasters cores=1 logs=data/logs
 ```
 
 # Accumulating missing tiles
 
-This is important to ensure all tiles are downloaded. It simply checks the `data/rasters/out` forlder to see if every "*.tif" is generated. If missing, it re-runs the download step one more time for the missing district.
+This is important to ensure all tiles are downloaded. It simply checks the `data/rasters/out` folder to see if every "*.tif" is generated. If missing, it re-runs the download step one more time for the missing district.
 
 
 

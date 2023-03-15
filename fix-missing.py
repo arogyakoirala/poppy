@@ -10,8 +10,9 @@ DIR = args.dir
 
 dirs = os.listdir(DIR)
 print(f"Found {len(dirs)} directories.")
+print(dirs)
 for d in dirs:
     print(d)
-    # print(os.listdir(d))
+    print(os.listdir(f'{DIR}/{d}'))
     # if f'{d}.tif' in os.listdir(d):
     #     print(f'Found TIF for {d}')

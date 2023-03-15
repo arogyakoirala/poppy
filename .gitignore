@@ -2,8 +2,11 @@ env/
 env2/
 .ipynb_checkpoints/
 __pycache__
+utils/__pycache__
+
 outputs/
 out/
 interim/
 poppy-env/
-__pycache__
+data/
+logs/

@@ -197,7 +197,7 @@ class RasterGenerationHelper:
         pool = mp.Pool(processes=cpus)
         chunk_processes = [pool.apply_async(self._get_rasters_for_chunk, args=(chunk, self.parent)) for chunk in parent_chunks]
         chunk_results = [chunk.get() for chunk in chunk_processes]
-    
+
     def _get_rasters_for_chunk(self, gdf_chunk, gdf_complete):
         
         for i, tile in gdf_chunk.iterrows():
@@ -454,7 +454,7 @@ class Sampler:
         
         # Save pre and post NDVI plots
         _dir = self.input_raster.split("/")[-1].split(".tif")[0]
-        Path(f"{self.out_dir}/{_dir}_plots").mkdir(exist_ok=True, parents=True)
+        Path(f"{self.out_dir}/plots").mkdir(exist_ok=True, parents=True)
         
         fig, ax = plt.subplots(1,1,figsize=(10,4), dpi=200)
         sns.histplot(copy['ndvi_pre'], ax = ax)
@@ -462,7 +462,7 @@ class Sampler:
         plt.title("NDVI: Pre (blue) and Post (orange)")
         plt.tight_layout()
         ax.set(xlabel='NDVI', ylabel='Density')
-        plt.savefig(f'{self.out_dir}/{_dir}_plots/plot_ndvi.png')
+        plt.savefig(f'{self.out_dir}/plots/ndvi.png')
         
         # Save pre and post raster plots  
         self.save_images()
@@ -530,7 +530,8 @@ class Sampler:
         ax=ax.flatten()
 
         _dir = self.input_raster.split("/")[-1].split(".tif")[0]
-        locs = open(f"{self.out_dir}/{_dir}_locs.txt", "a")
+        locs = open(f"{self.out_dir}/locs.txt", "a")
+        np.random.seed(seed=42)
         for i in range(0, n_images):
             with rasterio.open(self.input_raster) as src:
                 random_x = np.random.randint(x_lb, x_ub)
@@ -548,5 +549,5 @@ class Sampler:
                     
         locs.close()   
         _dir = self.input_raster.split("/")[-1].split(".tif")[0]
-        plt.savefig(f'{self.out_dir}/{_dir}_plots/plot_prepost.png')
+        plt.savefig(f'{self.out_dir}/plots/prepost.png')
 
