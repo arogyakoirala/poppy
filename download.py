@@ -14,26 +14,25 @@ if __name__ == '__main__':
     parser.add_argument("--shp", help="Shapefile path")
     parser.add_argument("--out_dir", help="Directory to store outputs")
     parser.add_argument("--n_cores", help="Number of cores")
-    parser.add_argument("--format", help="One of 'R' (raster) or 'Z' (zarr)")
     parser.add_argument("--interim_dir", help="One of 'R' (raster) or 'Z' (zarr)")
+    parser.add_argument("--crop_proba", help="Crop Probability for masking")
     args = parser.parse_args()
 
     # Inputs
     SHP = None
-    SHP_DIR = None
 
     # Parameters (exposed)
     YEAR = '2019'
     MASK = None
-    OUT_DIR = "out_dl"
-    FORMAT = 'R'
+    OUT_DIR = "out"
     N_CORES = multiprocessing.cpu_count() - 2
-    INTERIM_DIR = "interim_dl"
+    INTERIM_DIR = "../2308_interim"
+    CROP_PROBA=70
 
     # Parameters (unexposed)
     _RESOLUTION_P = 2500
     _RESOLUTION_C = 250
-    _POST_PERIOD_DAYS = [30, 45]
+    _POST_PERIOD_DAYS = [25, 40]
 
     # Parameters (derived)
     _TILE_OUTPUT_DIR = f'{INTERIM_DIR}/tiles'
@@ -53,17 +52,34 @@ if __name__ == '__main__':
     if args.out_dir:
         OUT_DIR = args.out_dir
 
-    if args.format:
-        FORMAT = args.format
-
+    # if args.format:
+    #     FORMAT = args.format
     
     if args.n_cores:
         N_CORES = int(args.n_cores)
+    
+    if args.crop_proba:
+        CROP_PROBA = int(args.crop_proba)
 
     if args.interim_dir:
         INTERIM_DIR = args.interim_dir
 
     # print(f"### Using {N_CORES} cores..")
+
+    print(f"""
+
+        Starting download step...
+        
+        Run parameters:
+
+            SHP = {SHP}
+            INTERIM_DIR = {INTERIM_DIR}
+            OUT_DIR = {OUT_DIR}
+            N_CORES = {N_CORES}
+            YEAR = {YEAR}
+            MASK = {MASK} 
+
+    """)
 
 
     from utils.shapefile import ShapefileHelper
@@ -100,7 +116,7 @@ if __name__ == '__main__':
             n_cores=n_cores, 
             bypass=False
         ) 
-        bd.extract_best_dates(grid_path = f'{interim_dir}/bdg.gpkg')
+        bd.extract_best_dates(grid_path = f'{interim_dir}/bdg.gpkg', mask_tif=MASK, crop_proba=CROP_PROBA)
         print(f"#### Best dates calculation completed for {shp}.. | {time.time()-start} sec")
 
         
@@ -129,9 +145,9 @@ if __name__ == '__main__':
         mrs.merge(filename=shp.split('/')[-1].split('.gpkg')[0])
         print(f"#### Merge complete for {shp}.. | {time.time()-start} sec")
 
-
+        print("###############",MASK, type(MASK))
         # Mask if mask available
-        if MASK is not None:
+        if type(MASK) == 'None':
             print(f"#### Starting masking step for {shp}..")
             masker = Masker(
                 interim_dir, 
@@ -139,16 +155,18 @@ if __name__ == '__main__':
                 f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif",
                 MASK
             )
-            masker.mask(filename=shp.split('/')[-1].split('.gpkg')[0], gte=60)
+            masker.mask(filename=shp.split('/')[-1].split('.gpkg')[0], gte=CROP_PROBA)
             print(f"#### Masking complete for {shp}.. | {time.time()-start} sec")
 
         Path(f"{out_dir}/{shp.split('.gpkg')[0]}").mkdir(parents=True, exist_ok=True)
-        os.system(f"cp -r {interim_dir}/tiles {out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}_tiles")
-        os.system(f"cp {interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif {out_dir}/")
+
+        # os.system(f"cp -r {interim_dir}/tiles {out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}_tiles")
+        # os.system(f"cp {interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif {out_dir}/")
 
 
-        sampler = Sampler(f"{out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
+        sampler = Sampler(f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
         sampler.sample_zarr(1.0)        
-        shutil.rmtree(interim_dir)
-
+        f = open(f"{out_dir}/status.log", "a")
+        f.write(f"Completed raster generation for {shp} in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
+        f.close()
     getBestDatesRaster(SHP, INTERIM_DIR, out_dir=OUT_DIR, n_cores=N_CORES)
