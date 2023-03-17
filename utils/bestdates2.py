@@ -231,34 +231,40 @@ class DatesHelper:
         child.columns = ['grid_id', 'BSD', 'geometry']
 
 
-        if mask_tif is not None:
-            mask_raster = rio.open(mask_tif)
-            out_img, out_transform = mask(mask_raster, shapes=child.geometry, crop=True)
-            out_img[out_img == 255] = 0
-            is_valid = (out_img > crop_proba).astype(np.uint8)
+        if mask_tif is  None:
+            print('Mask file missing')
+            return False
+        # Begin modal best date calculation
+        mask_raster = rio.open(mask_tif)
+        out_img, out_transform = mask(mask_raster, shapes=child.geometry, crop=True)
+        out_img[out_img == 255] = 0
+        is_valid = (out_img > crop_proba).astype(np.uint8)
 
-            cropland = []
-            for coords, value in features.shapes(is_valid, transform=out_transform):
-                geom = shape(coords)
-                cropland.append({"geometry": geom, "value" : value})
+        cropland = []
+        for coords, value in features.shapes(is_valid, transform=out_transform):
+            geom = shape(coords)
+            cropland.append({"geometry": geom, "value" : value})
 
-            cropland = gpd.GeoDataFrame(cropland).set_crs("epsg:4326")
-            cropland = cropland[cropland['value']==1]
+        cropland = gpd.GeoDataFrame(cropland).set_crs("epsg:4326")
+        cropland = cropland[cropland['value']==1]
 
-            joined = child.sjoin(cropland)
+        joined = child.sjoin(cropland)
+        if len(joined) > 0:
             modal_date = st.mode(joined[['BSD']].to_numpy().squeeze())[0][0]
-            print("modal_date:", modal_date)
+            print("Modal best date:", modal_date)
             all_dates = sorted(list(np.unique(joined['BSD'])))
 
-            print("all_dates:",all_dates)
+            print("All dates:",all_dates)
             new_bsd = all_dates[all_dates.index(modal_date)]
             print("new_best_date:", new_bsd)
             child['BSD'] = new_bsd
+        else:
+            return False
+        # End modal best date calculation
 
         child.to_file(f"{self.data_dir}/child.gpkg", driver="GPKG")
-        
         print(f"-------- Saved child GDF. Completed!")
-
+        return True
 
     def get_missing(self, grid_path=None):
         if grid_path is None:

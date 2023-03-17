@@ -116,57 +116,72 @@ if __name__ == '__main__':
             n_cores=n_cores, 
             bypass=False
         ) 
-        bd.extract_best_dates(grid_path = f'{interim_dir}/bdg.gpkg', mask_tif=MASK, crop_proba=CROP_PROBA)
-        print(f"#### Best dates calculation completed for {shp}.. | {time.time()-start} sec")
+        were_dates_found = bd.extract_best_dates(grid_path = f'{interim_dir}/bdg.gpkg', mask_tif=MASK, crop_proba=CROP_PROBA)
+        if were_dates_found:
+            print(f"#### Best dates calculation completed for {shp}.. | {time.time()-start} sec")
 
-        
-        # Get tiles
-        print(f"#### Starting raster download for {shp}..")
-        Path(f'{interim_dir}/tiles').mkdir(parents=True, exist_ok=True)
-        rgh = RasterGenerationHelper(
-            f'{interim_dir}/parent.gpkg', 
-            f'{interim_dir}/child.gpkg', 
-            f'{interim_dir}/tiles', 
-            n_cores, 
-            clean = True, 
-            post_period_days = post_period_days
-        )
-        rgh.get_rasters()
-        print(f"#### Rasters downloaded for {shp}.. | {time.time()-start} sec")
+            # Get tiles
+            print(f"#### Starting raster download for {shp}..")
+            Path(f'{interim_dir}/tiles').mkdir(parents=True, exist_ok=True)
+            rgh = RasterGenerationHelper(
+                f'{interim_dir}/parent.gpkg', 
+                f'{interim_dir}/child.gpkg', 
+                f'{interim_dir}/tiles', 
+                n_cores, 
+                clean = True, 
+                post_period_days = post_period_days
+            )
+            rgh.get_rasters()
+            print(f"#### Rasters downloaded for {shp}.. | {time.time()-start} sec")
 
 
-        # Merge dates with tiles
-        print(f"#### Starting merge step for {shp}..")
-        mrs = MergeRasterSingleAoi(
-            interim_dir, 
-            shp, 
-            f'{interim_dir}/tiles' 
-        )
-        mrs.merge(filename=shp.split('/')[-1].split('.gpkg')[0])
-        print(f"#### Merge complete for {shp}.. | {time.time()-start} sec")
-
-        print("###############",MASK, type(MASK))
-        # Mask if mask available
-        if type(MASK) == 'None':
-            print(f"#### Starting masking step for {shp}..")
-            masker = Masker(
+            # Merge dates with tiles
+            print(f"#### Starting merge step for {shp}..")
+            mrs = MergeRasterSingleAoi(
                 interim_dir, 
                 shp, 
-                f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif",
-                MASK
+                f'{interim_dir}/tiles' 
             )
-            masker.mask(filename=shp.split('/')[-1].split('.gpkg')[0], gte=CROP_PROBA)
-            print(f"#### Masking complete for {shp}.. | {time.time()-start} sec")
+            mrs.merge(filename=shp.split('/')[-1].split('.gpkg')[0])
+            print(f"#### Merge complete for {shp}.. | {time.time()-start} sec")
 
-        Path(f"{out_dir}/{shp.split('.gpkg')[0]}").mkdir(parents=True, exist_ok=True)
+            print("###############",MASK, type(MASK))
+            # Mask if mask available
+            if type(MASK) == 'None':
+                print(f"#### Starting masking step for {shp}..")
+                masker = Masker(
+                    interim_dir, 
+                    shp, 
+                    f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif",
+                    MASK
+                )
+                masker.mask(filename=shp.split('/')[-1].split('.gpkg')[0], gte=CROP_PROBA)
+                print(f"#### Masking complete for {shp}.. | {time.time()-start} sec")
 
-        # os.system(f"cp -r {interim_dir}/tiles {out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}_tiles")
-        # os.system(f"cp {interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif {out_dir}/")
+            Path(f"{out_dir}/{shp.split('.gpkg')[0]}").mkdir(parents=True, exist_ok=True)
+
+            # os.system(f"cp -r {interim_dir}/tiles {out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}_tiles")
+            # os.system(f"cp {interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif {out_dir}/")
 
 
-        sampler = Sampler(f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
-        sampler.sample_zarr(1.0)        
-        f = open(f"{out_dir}/status.log", "a")
-        f.write(f"Completed raster generation for {shp} in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
-        f.close()
+            sampler = Sampler(f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
+            sampler.sample_zarr(1.0)        
+            f = open(f"{out_dir}/COMPLETE", "a")
+            f.write(f"Completed raster generation for {shp} in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
+            f.close()
+        else:
+            print(f"#### Process ended at best dates calculation. No crop land found | {time.time()-start} sec")
+            f = open(f"{interim_dir}/NOCROP", "a")
+            f.write(f"Completed raster generation for {shp} in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
+            f.close()
+    
+    
+    def cleanup(interim_dir, out_dir):
+        print(os.listdir(interim_dir))
+        if 'NOCROP' in os.listdir(interim_dir):
+            print(f"No crop data in: {out_dir}, deleting...")
+            os.system(f"rm -rf {out_dir}")
+
     getBestDatesRaster(SHP, INTERIM_DIR, out_dir=OUT_DIR, n_cores=N_CORES)
+    cleanup(interim_dir=INTERIM_DIR, out_dir=OUT_DIR)
+

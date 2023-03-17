@@ -13,6 +13,7 @@ from rasterio.plot import show
 from rasterio.windows import Window
 from shapely.geometry import box
 import shutil
+import xarray
 # from sklearn.preprocessing import StandardScaler
 # from sklearn.cluster import KMeans
 # from sklearn.mixture import GaussianMixture

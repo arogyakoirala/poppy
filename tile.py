@@ -12,6 +12,8 @@ args = parser.parse_args()
 
 RESOLUTION = 50000
 
+prefix = os.path.split(args.shp)[-1].split(".gpkg")[0]
+
 if args.resolution:
     RESOLUTION=int(args.resolution)
 
@@ -31,10 +33,10 @@ for i, tile in grid.iterrows():
     temp['grid_id'] = temp['grid_id'].astype('int')
     temp.columns = ['GID', 'geometry']
     temp = temp.set_crs("epsg:4326")
-    temp.to_file(f'{args.out_dir}/{temp.iloc[0][0]}.gpkg')
+    temp.to_file(f'{args.out_dir}/{prefix}_{temp.iloc[0][0]}.gpkg')
 
 parent = Path(args.out_dir).parent.absolute()
 src = f"{args.out_dir}/grid.gpkg"
-dst = f"{parent}/grid.gpkg"
+dst = f"{parent}/{prefix}_grid.gpkg"
 shutil.copy(src, dst)
 os.remove(f"{args.out_dir}/grid.gpkg")
