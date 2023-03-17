@@ -158,15 +158,15 @@ if __name__ == '__main__':
                 masker.mask(filename=shp.split('/')[-1].split('.gpkg')[0], gte=CROP_PROBA)
                 print(f"#### Masking complete for {shp}.. | {time.time()-start} sec")
 
-            Path(f"{out_dir}/{shp.split('.gpkg')[0]}").mkdir(parents=True, exist_ok=True)
+            # Path(f"{out_dir}/{shp.split('.gpkg')[0]}").mkdir(parents=True, exist_ok=True)
 
-            # os.system(f"cp -r {interim_dir}/tiles {out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}_tiles")
-            # os.system(f"cp {interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif {out_dir}/")
+            # # os.system(f"cp -r {interim_dir}/tiles {out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}_tiles")
+            # # os.system(f"cp {interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif {out_dir}/")
 
 
-            sampler = Sampler(f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
-            sampler.sample_zarr(1.0)        
-            f = open(f"{out_dir}/COMPLETE", "a")
+            # sampler = Sampler(f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
+            # sampler.sample_zarr(1.0)        
+            # f = open(f"{out_dir}/COMPLETE", "a")
             f.write(f"Completed raster generation for {shp} in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
             f.close()
         else:
