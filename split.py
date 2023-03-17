@@ -1,3 +1,5 @@
+conda activate poppy-linux
+
 import argparse
 from pathlib import Path
 import geopandas as gpd
