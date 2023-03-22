@@ -43,7 +43,7 @@ folium==0.14.0
 fonttools==4.39.0
 fqdn==1.5.1
 future==0.18.3
-GDAL==3.6.3
+GDAL
 gdown==4.6.4
 geeadd==0.5.6
 geemap==0.20.1

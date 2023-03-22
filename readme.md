@@ -2,6 +2,27 @@
 
 This respository contains code that uses unsupervised learning techniques on Google Earth Imagery to predict poppy cultivation in Afghanistan. Using ground truth data from UNODC it then calculates correlations and SSEs between ground truth and predicted values.
 
+# Installation
+
+Follow these steps to setup your environment. 
+
+1. Clone this repository: `git clone https://github.com/arogyakoirala/poppy.git`
+2. Navigate to project directory: `cd poppy`
+3. Create virtual environment: `python3 -m venv poppy-env`
+4. Activate virtual environment: `source poppy-env/bin/activate`
+5. Install requirements using pip: `pip install -r requirements.txt`
+
+
+This setup doesn't work in `fati` yet.
+
+Using conda? You need to do the following
+
+1. Clone this repository: `git clone https://github.com/arogyakoirala/poppy.git`
+2. Navigate to project directory: `cd poppy`
+3. Create environment: `conda create --name poppy-env-arogya`
+4. Activate environment: `conda activate poppy-env-arogya`
+5. Install pip: `conda install pip`
+
 # Tutorial
 
 ## Data preparation
@@ -97,7 +118,7 @@ Traceback (most recent call last):
 IndexError: band index 16 out of range (not in (1, 2, 3, 4))
 ```
 
-## Prediction
+## Generate predictions using model
 
 Let's use the fitted model for making predictions for all shapefiles in `inputs/districts_tiled` folder. This will allow us to generate numbers at a district level.
 
