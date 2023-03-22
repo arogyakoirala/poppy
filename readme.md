@@ -51,7 +51,7 @@ For this we will use `download.sh`
 ./download.sh year=2019 mode=multi shp=inputs/districts_tiled mask=inputs/mask.tif out=interim/rasters/modal2019 logs=interim/logs cores=2
 ```
 
-> **Note on `download.sh`**: This script is capable of parallelly downloading rasters from GEE (specied through the `--cores` parameter) and takes in the following parameters.
+**Notes on `download.sh`**: This script is capable of parallelly downloading rasters from GEE (specied through the `--cores` parameter) and takes in the following parameters.
 
 - `year`: The year for which to download the imagery
 - `mode`: Can be one of 'multi' (for parallelized downloading) or 'solo' if we are only working with one shapefile.
