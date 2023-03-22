@@ -21,23 +21,31 @@ from rasterio.plot import show
 from rasterio.windows import Window
 from shapely.geometry import box
 
+# Specify parameters
 MODEL = 'kmeans'
 N = 3
 TRANSFORM = 'diff_bands'
 NDVI_CUTOFF = 0.4
+NAME = ""
 
+# Command line arguments parser
 parser = argparse.ArgumentParser()
 parser.add_argument("shp", help="SHP")
-parser.add_argument("rasters_dir", help="Out")
+parser.add_argument("rasters_dir", help="Rasters Dir")
 parser.add_argument("out_dir", help="Out")
+parser.add_argument("--name", help="Out")
 args = parser.parse_args()
 
+# Directory (input and output) declaration and setup
 SDIR = args.shp
 RDIR = args.rasters_dir 
 IDIR = f'{RDIR}/interim'
+candidates = [f for f in os.listdir(IDIR) if f != '.DS_Store']
 
 ODIR = f"{args.out_dir}/{MODEL}-{N}"
-candidates = [f for f in os.listdir(IDIR) if f != '.DS_Store']
+if args.name:
+    ODIR = f"{args.out_dir}/{MODEL}-{N}-{args.name}"
+    
 Path(ODIR).mkdir(parents=True, exist_ok=False)
 IMGDIR = f"{ODIR}/images"
 Path(IMGDIR).mkdir(parents=True, exist_ok=True)
@@ -45,11 +53,13 @@ Path(IMGDIR).mkdir(parents=True, exist_ok=True)
 TDIR = f"{ODIR}/tables"
 Path(TDIR).mkdir(parents=True, exist_ok=True)
 
+# Log file to store important information
 f = open(f"{ODIR}/log.txt", "a")
 start = time.time()
 dt = datetime.fromtimestamp(start).strftime("%A, %B %d, %Y %I:%M:%S")
 f.write(f"Started model fitting process at {dt}")
 
+# Function to get clipped raster pertaining to a GeoDataFrame
 def get_roa_raster(roa_shp):
     ROA = gpd.read_file(roa_shp).reset_index()
 
@@ -72,16 +82,19 @@ def get_roa_raster(roa_shp):
 
     clipped_raster = merge_arrays(clipped_rasters)
     return clipped_raster
-    # clipped_raster.rio.to_raster(f'{args.out_dir}/clipped.tif')
 
+# Adds NDVI Values to data
 def add_ndvi(df, b8, b4, label):
     df[label] = (df[b8] - df[b4]) / (df[b8] + df[b4]) 
     return df
 
+# Removes NaNs
 def remove_nans(df):
    return df[~np.isnan(df).any(axis=1)]
 
 
+# Raster to numpy array, 
+# Output: vector containing pre-NDVI for all qualified pixels + numpy array of dataset.
 def prep_data(clipped):
     df = clipped.to_dataframe(name='band_value')
     df = df.reset_index()
@@ -98,7 +111,7 @@ def prep_data(clipped):
     df = df[df['ndvi_pre'] > NDVI_CUTOFF]
     ndvis = df.reset_index()['ndvi_pre'] # save pre ndvis for future plotting
 
-    # Data transformation
+    # Apply required data transformation
     if TRANSFORM == 'diff_bands':
         for col in range(1,13):
             df[col] = df[col+12] - df[col]
@@ -108,6 +121,7 @@ def prep_data(clipped):
     return df, ndvis
 
 
+# Helper function to zave numpy array to disk (reqd when using multiple input shapefiles)
 def save_zarr(df, path):
     if os.path.exists(path):
         z = zarr.open(path, mode='a')
@@ -115,12 +129,18 @@ def save_zarr(df, path):
     else:
         zarr.save(path, df.to_numpy()) 
 
+# Saves Xarray dataset to raster
 def save_tifs_raw(raw, name):
     raw.rio.to_raster(f"{IMGDIR}/{name}.tif")
 
 
 
-# Ready data for modeling
+# Model step 1: Ready data for modeling
+# Look at all shapefiles in $SDIR
+# For each shapefile:
+#      1. Generate Raster
+#      2. Save generated raster, for later review
+#      3. Generate numpy array and save for modeling step
 for shp in [f for f in os.listdir(args.shp) if f != '.DS_Store']:
     file_path = f'{args.shp}/{shp}'
     f.write(f"\nUsing shapefile: {file_path}")
@@ -131,14 +151,16 @@ for shp in [f for f in os.listdir(args.shp) if f != '.DS_Store']:
 
 f.write(f"\nCompleted data preparation in {np.round(time.time()-start, 3)} seconds ({np.round((time.time()-start)/60,2)} minutes)")
 
-# Perform model fitting
+# Model fitting - start
 DATA = zarr.open(f"{ODIR}/raw.zarr")[:]
 f.write(f"\n\nStarting modeling step, data dimensions: {DATA.shape} ")
 
+# Normalize
 scaler = StandardScaler()
 scaler.fit(DATA)
 norm = scaler.transform(DATA)
 
+# Save scaler from training data for later use
 with open(f'{ODIR}/scaler.pkl', 'wb') as fi:
     pickle.dump(scaler, fi)
 
@@ -146,16 +168,19 @@ if MODEL=='kmeans':
     model = KMeans(n_clusters=N, n_init=10)
     model.fit(norm)
 
+# Save model for later use
 with open(f'{ODIR}/model.pkl', 'wb') as fi:
     pickle.dump(model, fi)
 
+# Model fitting - end
 f.write(f"\nCompleted model fitting in {np.round(time.time()-start, 3)} seconds ({np.round((time.time()-start)/60,2)} minutes)")
 
 
 
-# Predict on modeling regions
+# Extra Step: Predict on modeling regions, for later review
 f.write(f"\n\nStarting prediction step")
 
+# helper function to calculate euclidian distance between two vectors
 def getDistances(a, b):
     aSumSquare = np.sum(np.square(a),axis=1)
     bSumSquare = np.sum(np.square(b),axis=1)
@@ -163,6 +188,7 @@ def getDistances(a, b):
     dists = np.sqrt(aSumSquare[:,np.newaxis]+bSumSquare-2*mul)
     return dists
 
+# Get distances for each pixel from model centroids
 def get_distances_and_scores(norm, model):
     CENTROIDS =  model.cluster_centers_
     DISTANCES = getDistances(norm, CENTROIDS)
@@ -174,6 +200,7 @@ def get_distances_and_scores(norm, model):
     SCORES = np.divide(_1_by_d,_sigma_term)
     return DISTANCES, SCORES
 
+# Generate prediction for each pixel
 def predict_k_means(df):
     DATA=df.to_numpy()
     X = DATA[:, 2:]
@@ -190,7 +217,7 @@ def predict_k_means(df):
     RESULTS = RESULTS.sort_values(['y', 'x'], ascending=False)
     return RESULTS
 
-    
+# Save generated predictions
 def save_tifs_pred(predictions, name):
     PDIR = f"{ODIR}/predictions/{name}"
     Path(PDIR).mkdir(parents=True, exist_ok=True)
@@ -213,6 +240,7 @@ def save_tifs_pred(predictions, name):
         os.remove(_f)
 
 
+# Save generated plots
 def save_plots(predictions, name):
     fig, ax = plt.subplots(N, 1, dpi=70, figsize=(9,9))
     ax=ax.flatten()
@@ -223,10 +251,12 @@ def save_plots(predictions, name):
     plt.tight_layout()
     plt.savefig(f'{IMGDIR}/{name}_ndvi.png')
 
+# Save generated tables
 def save_tables(predictions, name):
     counts = pd.DataFrame(predictions.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi': 'clustering_ha'})
     counts.to_csv(f"{TDIR}/{name}_acreage.csv")
 
+## Actual prediction step
 for shp in [f for f in os.listdir(args.shp) if f != '.DS_Store']:
     file_path = f'{args.shp}/{shp}'
     f.write(f"\nUsing shapefile: {file_path}")
@@ -240,6 +270,7 @@ for shp in [f for f in os.listdir(args.shp) if f != '.DS_Store']:
     save_tables(predictions, shp.split(".gpkg")[0])
     save_tifs_pred(predictions, shp.split(".gpkg")[0])
 
+# Save sample images with predictions for later use
 def save_samples():
     np.random.seed(42)
     images = [f for f in os.listdir(IMGDIR) if f != '.DS_Store']

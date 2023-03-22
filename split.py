@@ -18,8 +18,8 @@ afg = gpd.read_file(args.shp)
 
 # print(afg)
 
+# Split district398.gpkg into constituent district level shapefiles
 for i, district in afg.iterrows():
-    # print(district)
     _ = []
     id_ = district['DISTID']
     name_ = district['DIST_34_NA']

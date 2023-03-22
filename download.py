@@ -27,7 +27,7 @@ if __name__ == '__main__':
     OUT_DIR = "out"
     N_CORES = multiprocessing.cpu_count() - 2
     INTERIM_DIR = "../2308_interim"
-    CROP_PROBA=70
+    CROP_PROBA=0
 
     # Parameters (unexposed)
     _RESOLUTION_P = 2500
@@ -39,6 +39,8 @@ if __name__ == '__main__':
     _PATH_TO_PARENT_GRID = f"{INTERIM_DIR}/parent.gpkg"
     _PATH_TO_CHILD_GRID = f"{INTERIM_DIR}/child.gpkg"
 
+
+    
 
     if args.shp:
         SHP = args.shp
@@ -87,10 +89,31 @@ if __name__ == '__main__':
     from utils.rasters import RasterGenerationHelper, MergeRasterSingleAoi, Masker, Sampler
     from utils.data import DataHelper
 
+    start = time.time()
+
     def getBestDatesRaster(shp, interim_dir, out_dir=OUT_DIR, year=YEAR, n_cores=1, res_p=_RESOLUTION_P, res_c=_RESOLUTION_C, post_period_days=_POST_PERIOD_DAYS):
         
-        start = time.time()
 
+        if os.path.exists(f"{OUT_DIR}/COMPLETE"):
+
+            prefix = shp.split("/")[-1].split(".gpkg")[0]
+            if os.path.exists(f"{OUT_DIR}/{prefix}.tif"):
+                print("Found pre-generated tif file in OUT folder")
+                return
+            elif os.path.exists(f"{INTERIM_DIR}/{prefix}.tif"):
+                print("Found pre-generated tif file in INTERIM folder")
+
+                src = f'{INTERIM_DIR}/{prefix}.tif'
+                dest = f'{OUT_DIR}/{prefix}.tif'
+                shutil.copy(src, dest)
+                os.remove(src)
+                print("Copied stuff from INTERIM to OUT")
+                return
+                # os.path.exists(f"{INTERIM}/{prefix}.tif")
+            else: 
+                print(f"Skipping tile generation for {shp} because COMPLETE")
+                return
+            
         if os.path.exists(INTERIM_DIR):
             shutil.rmtree(INTERIM_DIR)
         Path(INTERIM_DIR).mkdir(exist_ok=True, parents=True)
@@ -166,8 +189,8 @@ if __name__ == '__main__':
 
             # sampler = Sampler(f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
             # sampler.sample_zarr(1.0)        
-            # f = open(f"{out_dir}/COMPLETE", "a")
-            f.write(f"Completed raster generation for {shp} in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
+            f = open(f"{out_dir}/COMPLETE", "w")
+            f.write(f"Completed raster generation in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
             f.close()
         else:
             print(f"#### Process ended at best dates calculation. No crop land found | {time.time()-start} sec")
@@ -181,6 +204,7 @@ if __name__ == '__main__':
         if 'NOCROP' in os.listdir(interim_dir):
             print(f"No crop data in: {out_dir}, deleting...")
             os.system(f"rm -rf {out_dir}")
+
 
     getBestDatesRaster(SHP, INTERIM_DIR, out_dir=OUT_DIR, n_cores=N_CORES)
     cleanup(interim_dir=INTERIM_DIR, out_dir=OUT_DIR)

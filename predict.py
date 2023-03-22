@@ -1,265 +1,281 @@
+from osgeo import gdal
+import os
+
+# files = [f'test/{f}' for f in os.listdir("test")]
+# shp = "inputs/districts_tiled_15k/2416_3.gpkg"
+
+# g = gdal.Warp("test/clipped.tif", files, format="GTiff",
+#              cutlineDSName=shp,
+#              cropToCutline=True)
+# g = None
+
+
 import argparse
+from pathlib import Path
+import geopandas as gpd
 import os
 import shutil
-from pathlib import Path
-import pickle
-import zarr
-import numpy as np
-import pandas as pd
 import rioxarray as rxr
-import rasterio
+from shapely.geometry import mapping
+from rioxarray.merge import merge_arrays
+import pandas as pd
+import numpy as np
+import zarr
+import time
+from datetime import datetime
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import pickle
+import xarray as xr
 import matplotlib.pyplot as plt
+import rasterio
 from rasterio.plot import show
 from rasterio.windows import Window
 from shapely.geometry import box
-import shutil
-import xarray
-# from sklearn.preprocessing import StandardScaler
-# from sklearn.cluster import KMeans
-# from sklearn.mixture import GaussianMixture
+import fiona
 
+# Command line arguments parser
 parser = argparse.ArgumentParser()
-parser.add_argument("shp", help="Path to Shapefile")
-parser.add_argument("model", help="Path to model")
-parser.add_argument("--mask", help="Path to mask if available")
-parser.add_argument("--year", help="Year")
-parser.add_argument("--interim_dir", help="Interim")
-parser.add_argument("--out_dir", help="Out Dir")
+parser.add_argument("shp", help="SHP")
+parser.add_argument("model_dir", help="Model Dir")
+parser.add_argument("rasters_dir", help="Rasters Dir")
+parser.add_argument("out_dir", help="Out")
 args = parser.parse_args()
 
-SHP = args.shp
-MODEL = args.model
 
-INTERIM_DIR ="interim"
-OUT_DIR = "out"
-YEAR = "2019"
-MASK = None
+# Specify parameters
+TRANSFORM = 'diff_bands'
+NDVI_CUTOFF = 0.4
+N = 3
 
-if args.out_dir:
-    OUT_DIR=args.out_dir
+# Folders
+MDIR = args.model_dir 
+ODIR = args.out_dir
+Path(ODIR).mkdir(parents=True, exist_ok=False)
+RDIR = args.rasters_dir
 
-if args.interim_dir:
-    INTERIM_DIR=args.interim_dir
+IMGDIR = f"{ODIR}/images"
+Path(IMGDIR).mkdir(parents=True, exist_ok=True)
 
-if args.mask:
-    MASK=args.mask
+TDIR = f'{ODIR}/tables'
+Path(TDIR).mkdir(parents=True, exist_ok=True)
 
-if args.year:
-    YEAR=args.year
+# Load Model
+def load_model(d):
+    _ = open(f"{d}/model.pkl",'rb')
+    model = pickle.load(_)
+    _ = open(f"{d}/scaler.pkl",'rb')
+    scaler = pickle.load(_)
+    return model, scaler
+model, scaler = load_model(MDIR)
 
+# Adds NDVI Values to data
+def add_ndvi(df, b8, b4, label):
+    df[label] = (df[b8] - df[b4]) / (df[b8] + df[b4]) 
+    return df
 
-# idir_split = args.out_dir.rsplit("/", 1)
-# INTERIM_DIR = f"{idir_split[0].join("/")}/{idir_split[1]}_interim"
+# Removes NaNs
+def remove_nans(df):
+   return df[~np.isnan(df).any(axis=1)]
 
-# if os.path.exists(INTERIM_DIR):
-#     shutil.rmtree(INTERIM_DIR)
-# Path(INTERIM_DIR).mkdir(exist_ok=False, parents=True)    
-
-# if os.path.exists(INTERIM_DIR):
-#     shutil.rmtree(INTERIM_DIR)
-# Path(INTERIM_DIR).mkdir(exist_ok=False, parents=True)
-
-# if os.path.exists(OUT_DIR):
-#     shutil.rmtree(OUT_DIR)
-# Path(OUT_DIR).mkdir(exist_ok=False, parents=True)
-        
-# if os.path.exists(OUT_DIR):
-#     shutil.rmtree(OUT_DIR)
-# Path(OUT_DIR).mkdir(exist_ok=True, parents=True)
-
-print(f"""
-
-    Starting prediction step...
-    
-    Run parameters:
-
-        SHP = {SHP}
-        MODEL = {MODEL}
-        INTERIM_DIR = {INTERIM_DIR}
-        OUT_DIR = {OUT_DIR}
-        YEAR = {YEAR}
-        MASK = {MASK} 
-
-""")
+def get_roa_raster(shp_path):
+    files = [f'{RDIR}/out/all/{f}' for f in os.listdir(f"{RDIR}/out/all")]
+    MERGED_DIR = f"{ODIR}/merged"
+    Path(MERGED_DIR).mkdir(parents=True, exist_ok=True)
+    out = shp_path.split("/")[-1].split(".gpkg")[0]
+    g = gdal.Warp(f"{MERGED_DIR}/{out}.tif", files, format="GTiff",
+             cutlineDSName=shp_path,
+             cropToCutline=True)
+    clipped_raster = rxr.open_rasterio(f"{MERGED_DIR}/{out}.tif")
+    return clipped_raster
 
 
-# if MASK is not None:
-#     os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR}")
-# else:
-os.system(f"python -u download.py --shp {SHP} --out_dir {OUT_DIR} --interim_dir {INTERIM_DIR} --n_cores 1 --year {YEAR} --mask {MASK}")
+def apply_transform(df):
+    if TRANSFORM == 'diff_bands':
+        for col in range(1,13):
+            df[col] = df[col+12] - df[col]
+        df['diff_ndvi'] = df['ndvi_post'] - df['ndvi_pre']
+        df = df[[*range(1,13), 'diff_ndvi']]
+    return df
+
+# Raster to numpy array, 
+# Output: vector containing pre-NDVI for all qualified pixels + numpy array of dataset.
+def prep_data(clipped):
+    df = clipped.to_dataframe(name='band_value')
+    df = df.reset_index()
+    df.columns = ['band', 'y', 'x', 'spatial_ref', 'value']
+    df = pd.pivot(df, index = ['y', 'x'], columns=['band'], values=['value']).reset_index()
+    cols = [*df.columns.get_level_values(0)[0:2], *df.columns.get_level_values(1)[2:]]
+    df.columns = df.columns.to_flat_index()
+    df.columns = cols
+
+    df = df.set_index(['y', 'x'])
+    df = add_ndvi(df, 8, 4, "ndvi_pre")
+    df = add_ndvi(df, 20, 16, "ndvi_post")
 
 
-def compute_euclidean(x, y):
-    return np.sqrt(np.sum((x-y)**2))
+    temp = df.isna().any(axis=1)
+    nas = df[temp]
 
-with open(f'{MODEL}/run_metadata.txt') as f:
-    lines = f.readlines()
+    lt_cutoff = df[df['ndvi_pre'] < NDVI_CUTOFF]
+    unqualified = pd.concat([nas, lt_cutoff])
 
-TYPE = lines[0].split("-")[0]
-N = int(lines[0].split("-")[1])
 
-print(lines[0])
+    df = remove_nans(df)
+    df = df[df['ndvi_pre'] > NDVI_CUTOFF]
+    ndvis = df.reset_index()['ndvi_pre'] # save pre ndvis for future plotting
 
-with open(f"{MODEL}/scaler.pkl", 'rb') as f:
-    scaler = pickle.load(f)
+    df = apply_transform(df)
+    unqualified = apply_transform(unqualified)
+    # # Apply required data transformation
+    # if TRANSFORM == 'diff_bands':
+    #     for col in range(1,13):
+    #         df[col] = df[col+12] - df[col]
+    #     df['diff_ndvi'] = df['ndvi_post'] - df['ndvi_pre']
+    #     df = df[[*range(1,13), 'diff_ndvi']]
+   
+    return df.reset_index(), unqualified.reset_index(), ndvis
 
-with open(f"{MODEL}/model.pkl", 'rb') as f:
-    model = pickle.load(f)
+# Get distances for each pixel from model centroids
+def get_distances_and_scores(norm, model):
+    CENTROIDS =  model.cluster_centers_
+    DISTANCES = get_dist(norm, CENTROIDS)
 
-DATA = f"{OUT_DIR}/sample.zarr"
-DATA = zarr.open(DATA)[:]
-DATA = DATA[:, :-1]
-DATA = DATA[~np.isnan(DATA).any(axis=1)]
+    _n = norm.shape[1]
+    _1_by_d = (1/DISTANCES)**(_n-1)
+    _sigma_term = np.sum(_1_by_d, axis=1)
+    _sigma_term = _sigma_term.reshape(_sigma_term.shape[0], 1)
+    SCORES = np.divide(_1_by_d,_sigma_term)
+    return DISTANCES, SCORES
 
-X = DATA[:, 2:]
-
-NORM = scaler.transform(X)
-
-np.random.seed(42)
-
-def getDistances(a, b):
+# helper function to calculate euclidian distance between two vectors
+def get_dist(a, b):
     aSumSquare = np.sum(np.square(a),axis=1)
     bSumSquare = np.sum(np.square(b),axis=1)
     mul = np.dot(a,b.T)
     dists = np.sqrt(aSumSquare[:,np.newaxis]+bSumSquare-2*mul)
     return dists
 
-if TYPE == 'kmeans':
-    CENTROIDS =  model.cluster_centers_
-    DISTANCES = getDistances(NORM, CENTROIDS)
-    # print("^^^^^DISTANCES", DISTANCES)
-    # print("^^^^^DISTANCES-SHAPE", DISTANCES.shape)
+# Generate prediction for each pixel
+def predict_k_means(df, model, scaler, unqualified):
+    DATA=df.to_numpy()
+    UNQ=unqualified.to_numpy() 
+    X = DATA[:, 2:]
+    NORM = scaler.transform(X)
+    DISTANCES, SCORES = get_distances_and_scores(NORM, model)
 
-    _n = NORM.shape[1]
-    _1_by_d = (1/DISTANCES)**(_n-1)
-    _sigma_term = np.sum(_1_by_d, axis=1)
-    _sigma_term = _sigma_term.reshape(_sigma_term.shape[0], 1)
-    # print(_sigma_term)
-    SCORES = np.divide(_1_by_d,_sigma_term)
-    # print("^^^^^SCORES-SHAPE", SCORES)
-
-    PREDS = model.predict(NORM) + 1
+    PREDS = model.predict(NORM)
     PREDS = np.array(PREDS)
     PREDS = PREDS.reshape(PREDS.shape[0], 1)
-
-    RES = DATA[:, [0,1,14]]
-    RES = np.hstack((RES, PREDS, DISTANCES, SCORES))
-    RES = pd.DataFrame(RES, columns = ['y','x','ndvi','cluster', "dist_centroid_0", "dist_centroid_1", "dist_centroid_2", "score_centroid_0",  "score_centroid_1",  "score_centroid_2"])
-
-    INPUT_RASTER = SHP.split("/")[-1].split(".gpkg")[0]
-
-    with rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
-        profile = src.profile
-    crs = profile['crs']
-    transform = profile['transform']
-            
-    RES = RES.drop_duplicates(subset=['y', 'x'])
-    RES = RES.sort_values(['y', 'x'], ascending=False)
-    # RES = RES.set_coords(['x', 'y'])
-
+    RESULTS = DATA[:, [0,1,14]]
+    RESULTS = np.hstack((RESULTS, PREDS, DISTANCES, SCORES))
+    
+    PREDS_UNQ = np.ones(len(unqualified)) * -1
+    PREDS_UNQ = np.array(PREDS_UNQ)
+    PREDS_UNQ = PREDS_UNQ.reshape(PREDS_UNQ.shape[0], 1)
+    DISTANCES_UNQ = np.zeros(len(unqualified)*3).reshape((len(unqualified),3))
+    SCORES_UNQ = np.zeros(len(unqualified)*3).reshape((len(unqualified),3))
+    RESULTS_UNQ = UNQ[:, [0,1,14]]
+    RESULTS_UNQ = np.hstack((RESULTS_UNQ, PREDS_UNQ, DISTANCES_UNQ, SCORES_UNQ))
 
     
 
-if TYPE == "gmm":
-    PREDS = model.predict_proba(NORM)
-    
-    
-    MAX_VAL = np.amax(PREDS, 1)
-    MAX_VAL = np.array(MAX_VAL)
-    MAX_VAL = MAX_VAL.reshape(MAX_VAL.shape[0], 1)
-    
-    MAX_I = np.argmax(PREDS, 1)
-    MAX_I = np.array(MAX_I)
-    MAX_I = MAX_I.reshape(MAX_I.shape[0], 1)
-
-    RES = DATA[:, [0,1,14]]
-    RES = np.hstack((RES, MAX_VAL))
-    RES = np.hstack((RES, MAX_I))
-
-    RES = pd.DataFrame(RES, columns = ['y','x','ndvi','cluster_prob', 'cluster'])
-
-    INPUT_RASTER = SHP.split("/")[-1].split(".gpkg")[0]
-
-    with rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
-        profile = src.profile
-    crs = profile['crs']
-    transform = profile['transform']
-
-    RES = RES.drop_duplicates(subset=['y', 'x'])
-    print(RES.shape)
-
-    RES = RES[RES['cluster_prob']>0.9]
-    RES = RES.sort_values(['y', 'x'], ascending=False)
-
-RES_ = RES
-RES = RES.set_index(['y', 'x']).to_xarray()
-RES.cluster.rio.to_raster(f"{OUT_DIR}/predictions.tif")
-RES.dist_centroid_0.rio.to_raster(f"{OUT_DIR}/dist_0.tif")
-RES.dist_centroid_1.rio.to_raster(f"{OUT_DIR}/dist_1.tif")
-RES.dist_centroid_2.rio.to_raster(f"{OUT_DIR}/dist_2.tif")
-RES.score_centroid_0.rio.to_raster(f"{OUT_DIR}/score_0.tif")
-RES.score_centroid_1.rio.to_raster(f"{OUT_DIR}/score_1.tif")
-RES.score_centroid_2.rio.to_raster(f"{OUT_DIR}/score_2.tif")
+    RESULTS = np.vstack((RESULTS, RESULTS_UNQ))
+    RESULTS = pd.DataFrame(RESULTS, columns = ['y','x','ndvi','cluster', "dist_centroid_0", "dist_centroid_1", "dist_centroid_2", "score_centroid_0",  "score_centroid_1",  "score_centroid_2"])
+    RESULTS = RESULTS.drop_duplicates(subset=['y', 'x'])
+    RESULTS = RESULTS.sort_values(['y', 'x'], ascending=False)
 
 
-s = rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif")
-x_lb = (s.width//2) - (s.width//4)
-x_ub = (s.width//2) + (s.width//4)
-y_lb = (s.height//2) - (s.height//4)
-y_ub = (s.height//2) + (s.height//4)
+    return RESULTS
 
-n_images = 8
-fig, ax = plt.subplots(3,n_images,figsize=(8*n_images,3*n_images), dpi=50)
-ax=ax.flatten()
+# Save generated predictions
+def save_tifs_pred(predictions, name, crs):
+    PDIR = f"{ODIR}/predictions/{name}"
+    Path(PDIR).mkdir(parents=True, exist_ok=True)
+    predictions = predictions.set_index(['y', 'x']).to_xarray()
+    predictions.cluster.rio.to_raster(f"{PDIR}/cluster.tif")
+    predictions.dist_centroid_0.rio.to_raster(f"{PDIR}/d0.tif")
+    predictions.dist_centroid_1.rio.to_raster(f"{PDIR}/d1.tif")
+    predictions.dist_centroid_2.rio.to_raster(f"{PDIR}/d2.tif")
+    predictions.score_centroid_0.rio.to_raster(f"{PDIR}/s0.tif")
+    predictions.score_centroid_1.rio.to_raster(f"{PDIR}/s1.tif")
+    predictions.score_centroid_2.rio.to_raster(f"{PDIR}/s2.tif")
+    raw_files = [f"{PDIR}/{f}" for f in os.listdir(PDIR) if f != '.DS_Store']
 
-for i in range(n_images):
-    x = np.random.randint(x_lb, x_ub)
-    y = np.random.randint(y_lb, y_ub)
-    with rasterio.open(f"{INTERIM_DIR}/{INPUT_RASTER}.tif") as src:
-        window = Window(x, y, 100, 100)
-        pre = src.read((4,3,2), window=window)
-        post = src.read((16,15,14), window=window)
-        show(pre, ax=ax[i], adjust=True)
-        show(post, ax=ax[n_images+i],  adjust=True)
-    bounds = rasterio.windows.bounds(window, src.transform)
-    bbox = box(minx=bounds[0], miny=bounds[1], maxx=bounds[2], maxy=bounds[3])
-    pred_ = rxr.open_rasterio(f"{OUT_DIR}/predictions.tif")
-    pred_ = pred_.rio.write_crs("epsg:4326", inplace=True)
-    pred_clip = pred_.rio.clip_box(minx=bounds[0], miny=bounds[1], maxx=bounds[2], maxy=bounds[3])
-    pred_clip.plot(ax=ax[n_images+n_images+i], add_colorbar=False)
-    ax[n_images+n_images+i].set_xticks([])
-    ax[n_images+n_images+i].set_yticks([])
-    ax[n_images+n_images+i].set(xlabel=None, ylabel=None)
-plt.tight_layout()
-plt.savefig(f'{OUT_DIR}/plot_predictions_{TYPE}_{N}.png')
+    datasets = {f"predictions_{name}": ["cluster.tif"], "distances":["d0.tif", "d1.tif", "d2.tif"], "scores":["s0.tif", "s1.tif", "s2.tif"]}
+    for s in datasets:
+        files = (" ").join([f"{PDIR}/{f}" for f in datasets[s]])
+        out_img = f"{PDIR}/{s}.tif"
+        os.system(f"rio stack {files} -o {out_img}")
+    for _f in raw_files:
+        os.remove(_f)
 
 
-fig, ax = plt.subplots(N, 1, dpi=70, figsize=(9,9))
-ax=ax.flatten()
-    
-for i in range(0,N):
-    data = RES_[RES_['cluster']==i]['ndvi']
-    ax[i].hist(data, bins=100)
-    ax[i].set_title(f"k={N}; cluster={i}")
-plt.tight_layout()
-plt.savefig(f'{OUT_DIR}/plot_ndvi_dist_{TYPE}_{N}.png')
+# Save generated plots
+def save_plots(predictions, name):
+    fig, ax = plt.subplots(N, 1, dpi=70, figsize=(9,9))
+    ax=ax.flatten()
+    for i in range(0,N):
+        data = predictions[predictions['cluster']==i]['ndvi']
+        ax[i].hist(data, bins=100)
+        ax[i].set_title(f"k={N}; cluster={i}")
+    plt.tight_layout()
+    plt.savefig(f'{IMGDIR}/{name}_ndvi.png')
 
+# Save generated tables
+def save_tables(predictions, name):
+    counts = pd.DataFrame(predictions.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi': 'clustering_ha'})
+    counts.to_csv(f"{TDIR}/{name}_acreage.csv")
 
-RESULTS = pd.DataFrame(RES_.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi': 'clustering_ha'})
-RESULTS.to_csv(f'{OUT_DIR}/cluster_dist_{TYPE}_{N}.csv')
-# shutil.rmtree(OUT_DIR)
-# shutil.rmtree(INTERIM_DIR)
+# Save sample images with predictions for later use
+def save_samples():
+    np.random.seed(42)
+    images = [f for f in os.listdir(IMGDIR) if f != '.DS_Store']
+    for im in images:
+        filename = im.split(".tif")[0]
+        s = rasterio.open(f"{IMGDIR}/{im}")
+        x_lb = (s.width//2) - (s.width//4)
+        x_ub = (s.width//2) + (s.width//4)
+        y_lb = (s.height//2) - (s.height//4)
+        y_ub = (s.height//2) + (s.height//4)
+        n_images = 8
+        fig, ax = plt.subplots(3,n_images,figsize=(8*n_images,3*n_images), dpi=50)
+        ax=ax.flatten()
+        PDIR = f"{ODIR}/predictions/{filename}"
+        for i in range(n_images):
+            x = np.random.randint(x_lb, x_ub)
+            y = np.random.randint(y_lb, y_ub)
+            with rasterio.open(f"{IMGDIR}/{im}") as src:
+                window = Window(x, y, 100, 100)
+                pre = src.read((4,3,2), window=window)
+                post = src.read((16,15,14), window=window)
+                show(pre, ax=ax[i], adjust=True)
+                show(post, ax=ax[n_images+i],  adjust=True)
+            bounds = rasterio.windows.bounds(window, src.transform)
+            bbox = box(minx=bounds[0], miny=bounds[1], maxx=bounds[2], maxy=bounds[3])
+            pred_ = rxr.open_rasterio(f"{PDIR}/predictions.tif")
+            pred_ = pred_.rio.write_crs("epsg:4326", inplace=True)
+            pred_clip = pred_.rio.clip_box(minx=bounds[0], miny=bounds[1], maxx=bounds[2], maxy=bounds[3])
+            pred_clip.plot(ax=ax[n_images+n_images+i], add_colorbar=False)
+            ax[n_images+n_images+i].set_xticks([])
+            ax[n_images+n_images+i].set_yticks([])
+            ax[n_images+n_images+i].set(xlabel=None, ylabel=None)
+        plt.tight_layout()
+        plt.savefig(f'{IMGDIR}/{filename}_samples.png')
 
+shps = [f for f in os.listdir(args.shp) if f != '.DS_Store']
+for shp in shps:
+    file_path = f'{args.shp}/{shp}'
+    clipped = get_roa_raster(file_path)
+    prediction_ready_data, unqualified, ndvis = prep_data(clipped)
+    if prediction_ready_data.shape[0] == 0:
+        print(f"No data based on NDVI cutoff. Skipping {shp}")
+    else:
+        predictions = predict_k_means(prediction_ready_data, model, scaler, unqualified)
+        predictions['ndvi'] = ndvis
+        save_tifs_pred(predictions, shp.split(".gpkg")[0], clipped.rio.crs)
+        save_plots(predictions, shp.split(".gpkg")[0])
+        save_tables(predictions, shp.split(".gpkg")[0])
+        print(f"Process complete for {shp}")
 
-for i in range(N):
-    for j in np.linspace(0,1,6):
-        RESULTS = pd.DataFrame(RES_)
-        RESULTS = RESULTS[RESULTS[f"score_centroid_{i}"]>=j]
-        RESULTS = pd.DataFrame(RESULTS.groupby('cluster').count()['ndvi']/100).rename(columns={'ndvi': 'clustering_ha'})
-        RESULTS.to_csv(f'{OUT_DIR}/{TYPE}_{N}_K_{i}_dist_score_gte_{int(np.round(j*100))}.csv')
-
-
-print(f"QC: Completed prediction process for: {SHP}")
-
-
-    
+save_samples()

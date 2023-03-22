@@ -90,8 +90,29 @@ else
         source="${interim_dir}/${base}/${base}.tif"
         dest="${out_dir}/${base}/"
         cp -r "$source" "$dest"
+
+        source="${interim_dir}/${base}/${base}.tif"
+        dest="${out_dir}/all"
+        mkdir -p "$dest"
+        cp -r "$source" "$dest"
     done
 
+    for entry in `ls $shp`;
+    do
+        
+        ((j=j%N)); ((j++==0)) && wait
+        # Define $idir and $odir
+        base=${entry##*/}
+        base=${base%.*}
+        idir="${interim_dir}/${base}"
+        odir="${out_dir}/${base}"
+        logfile="${logs}/download-${base}.txt"
+        
+        # Download
+        echo STARTED RECHECK AND CLEAN for $base.gpkg. Writing logfile to: $logfile
+        python download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year > $logfile &
+
+    done
 fi
 
 wait 

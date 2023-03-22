@@ -324,8 +324,10 @@ class MergeRasterSingleAoi:
         if os.path.exists(f"{self.data_dir}/{filename}.tif"):
             os.remove(f"{self.data_dir}/{filename}.tif")
             
-        os.system(f'gdalbuildvrt {self.data_dir}/{filename}.vrt {temp_dir}/*.tif -srcnodata "0"')
-        os.system(f'gdal_merge.py -o {self.data_dir}/{filename}.tif {self.data_dir}/{filename}.vrt')
+        os.system(f'gdalbuildvrt {self.data_dir}/{filename}.vrt {temp_dir}/*.tif -srcnodata None')
+        os.system(f'gdal_merge.py -o {self.data_dir}/{filename}_interim.tif {self.data_dir}/{filename}.vrt')
+        os.system(f"gdal_translate -of GTiff -a_nodata 0 {self.data_dir}/{filename}_interim.tif {self.data_dir}/{filename}.tif")
+        os.remove(f"{self.data_dir}/{filename}_interim.tif")
         
 
         raster = rxr.open_rasterio(f'{self.data_dir}/{filename}.tif').squeeze()
