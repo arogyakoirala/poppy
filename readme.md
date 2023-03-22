@@ -13,16 +13,6 @@ Follow these steps to setup your environment.
 5. Install requirements using pip: `pip install -r requirements.txt`
 
 
-This setup doesn't work in `fati` yet.
-
-Using conda? You need to do the following
-
-1. Clone this repository: `git clone https://github.com/arogyakoirala/poppy.git`
-2. Navigate to project directory: `cd poppy`
-3. Create environment: `conda create --name poppy-env-arogya`
-4. Activate environment: `conda activate poppy-env-arogya`
-5. Install pip: `conda install pip`
-
 # Tutorial
 
 ## Data preparation
@@ -88,7 +78,7 @@ Since we are dealing with multiple shapefiles, we are going to use mode='multi'.
 
 > **Run in background:** This process is going to take time. So it's better to run it in the background and store the logfile somewhere, using: 
 > ```
-> nohup ./download.sh year=2019 mode=multi shp=data/tiled mask=data/mask.tif out=data/rasters cores=20 logs=data/logs > logs/download_log.log & 
+> nohup ./download.sh year=2019 mode=multi shp=inputs/districts_tiled mask=inputs/mask.tif out=interim/rasters/modal2019 logs=interim/logs cores=20 > logs/download_log.log & 
 > ```
 > You can monitor the status of each individual tile by revieing logfiles present in the `interim/logs/` directory
 
@@ -126,3 +116,12 @@ Let's use the fitted model for making predictions for all shapefiles in `inputs/
 python predict.py inputs/districts_tiled outputs/models/kmeans-3-nadali-qandahar interim/rasters outputs/predictions/nadali-qandahar
 ```
 
+
+# Troubleshooting
+
+## The library gdal fails to install
+This was because the version specified in requirements.txt did not match the bindings of those found in ubuntu native gdal. This is fixed after we change the version info for gdal in requirements.txt to match the version we gent when running the following command.
+
+```
+gdal-config --version
+```
