@@ -27,7 +27,7 @@ if __name__ == '__main__':
     OUT_DIR = "out"
     N_CORES = multiprocessing.cpu_count() - 2
     INTERIM_DIR = "../2308_interim"
-    CROP_PROBA=0
+    CROP_PROBA=60
 
     # Parameters (unexposed)
     _RESOLUTION_P = 2500
@@ -179,21 +179,12 @@ if __name__ == '__main__':
                     MASK
                 )
                 masker.mask(filename=shp.split('/')[-1].split('.gpkg')[0], gte=CROP_PROBA)
-                print(f"#### Masking complete for {shp}.. | {time.time()-start} sec")
-
-            # Path(f"{out_dir}/{shp.split('.gpkg')[0]}").mkdir(parents=True, exist_ok=True)
-
-            # # os.system(f"cp -r {interim_dir}/tiles {out_dir}/{shp.split('/')[-1].split('.gpkg')[0]}_tiles")
-            # # os.system(f"cp {interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif {out_dir}/")
-
-
-            # sampler = Sampler(f"{interim_dir}/{shp.split('/')[-1].split('.gpkg')[0]}.tif", interim_dir, out_dir)
-            # sampler.sample_zarr(1.0)        
+                print(f"#### Masking complete for {shp}.. | {time.time()-start} sec")      
             f = open(f"{out_dir}/COMPLETE", "w")
             f.write(f"Completed raster generation in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
             f.close()
         else:
-            print(f"#### Process ended at best dates calculation. No crop land found | {time.time()-start} sec")
+            print(f"#### Process ended at best dates calculation. No crop land found for  CROP_PROBA = {CROP_PROBA}| {time.time()-start} sec")
             f = open(f"{interim_dir}/NOCROP", "a")
             f.write(f"Completed raster generation for {shp} in {(time.time()-start)/60} minutes {(time.time()-start)%60} seconds")
             f.close()
