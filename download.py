@@ -114,12 +114,12 @@ if __name__ == '__main__':
                 print(f"Skipping tile generation for {shp} because COMPLETE")
                 return
             
-        if os.path.exists(INTERIM_DIR):
-            shutil.rmtree(INTERIM_DIR)
+        # if os.path.exists(INTERIM_DIR):
+        #     shutil.rmtree(INTERIM_DIR)
         Path(INTERIM_DIR).mkdir(exist_ok=True, parents=True)
         
-        if os.path.exists(OUT_DIR):
-            shutil.rmtree(OUT_DIR)
+        # if os.path.exists(OUT_DIR):
+        #     shutil.rmtree(OUT_DIR)
         Path(OUT_DIR).mkdir(exist_ok=True, parents=True)
 
         # Make grids
@@ -146,15 +146,17 @@ if __name__ == '__main__':
             # Get tiles
             print(f"#### Starting raster download for {shp}..")
             Path(f'{interim_dir}/tiles').mkdir(parents=True, exist_ok=True)
-            rgh = RasterGenerationHelper(
-                f'{interim_dir}/parent.gpkg', 
-                f'{interim_dir}/child.gpkg', 
-                f'{interim_dir}/tiles', 
-                n_cores, 
-                clean = True, 
-                post_period_days = post_period_days
-            )
-            rgh.get_rasters()
+            
+            for i in range(3):
+                rgh = RasterGenerationHelper(
+                    f'{interim_dir}/parent.gpkg', 
+                    f'{interim_dir}/child.gpkg', 
+                    f'{interim_dir}/tiles', 
+                    n_cores, 
+                    # clean = True, 
+                    post_period_days = post_period_days
+                )
+                rgh.get_rasters()
             print(f"#### Rasters downloaded for {shp}.. | {time.time()-start} sec")
 
 

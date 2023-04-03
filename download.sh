@@ -55,7 +55,7 @@ else
         
         # Download
         echo Started process for $base.gpkg. Writing logfile to: $logfile
-        python download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year > $logfile &
+        python -u download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year > $logfile &
 
     done
 

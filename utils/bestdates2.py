@@ -262,7 +262,8 @@ class DatesHelper:
             return False
         # End modal best date calculation
 
-        child.to_file(f"{self.data_dir}/child.gpkg", driver="GPKG")
+        if len(child) > 0:
+            child.to_file(f"{self.data_dir}/child.gpkg", driver="GPKG")
         print(f"-------- Saved child GDF. Completed!")
         return True
 

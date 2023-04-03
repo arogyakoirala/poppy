@@ -40,6 +40,10 @@ import zarr
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
+from osgeo import gdal
+from osgeo.gdalconst import GA_Update
+
 ee.Initialize()
 
 
@@ -325,9 +329,22 @@ class MergeRasterSingleAoi:
             os.remove(f"{self.data_dir}/{filename}.tif")
             
         os.system(f'gdalbuildvrt {self.data_dir}/{filename}.vrt {temp_dir}/*.tif -srcnodata None')
-        os.system(f'gdal_merge.py -o {self.data_dir}/{filename}_interim.tif {self.data_dir}/{filename}.vrt')
-        os.system(f"gdal_translate -of GTiff -a_nodata 0 {self.data_dir}/{filename}_interim.tif {self.data_dir}/{filename}.tif")
-        os.remove(f"{self.data_dir}/{filename}_interim.tif")
+        os.system(f'gdal_merge.py -o {self.data_dir}/{filename}.tif {self.data_dir}/{filename}.vrt')
+
+
+        f = f'{self.data_dir}/{filename}.tif'
+        nodata = 0
+        # open the file for editing
+        ras = gdal.Open(f, GA_Update)
+        # loop through the image bands
+        for i in range(1, ras.RasterCount + 1):
+            # set the nodata value of the band
+            ras.GetRasterBand(i).SetNoDataValue(nodata)
+        # unlink the file object and save the results
+        ras = None
+
+        # os.system(f"gdal_translate -of GTiff -a_nodata 0 {self.data_dir}/{filename}_interim.tif {self.data_dir}/{filename}.tif")
+        # os.remove(f"{self.data_dir}/{filename}_interim.tif")
         
 
         raster = rxr.open_rasterio(f'{self.data_dir}/{filename}.tif').squeeze()
