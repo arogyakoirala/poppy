@@ -43,7 +43,7 @@ predictions= {}
 for folder in folders:
     src = rasterio.open(f'{scores_dir}/{folder}/scores.tif')
     # r = rxr.open_rasterio()
-    img = src.read(poppy_cluster).flatten()
+    img = src.read(poppy_cluster+1).flatten()
     poppy = (img > cutoff).sum() / 100.0
 
 
