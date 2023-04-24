@@ -93,8 +93,8 @@ print("Log correlation (spearman)", np.log(j['predicted_ha']).corr(np.log(j['act
 f = open(f"{results_dir}/correlations.txt", "w")
 f.write(f"Correlation (pearson): {j['predicted_ha'].corr(j['actual_ha'])}\n")
 f.write(f"Log Correlation (pearson): {np.log(j['predicted_ha']).corr(np.log(j['actual_ha']))}\n")
-f.write(f"Correlation (spearman): {j['predicted_ha'].corr(j['actual_ha'], method="spearman")}\n")
-f.write(f"Log Correlation (spearman): {np.log(j['predicted_ha']).corr(np.log(j['actual_ha']), method="spearman")}\n")
+f.write(f"Correlation (spearman): {j['predicted_ha'].corr(j['actual_ha'], method='spearman')}\n")
+f.write(f"Log Correlation (spearman): {np.log(j['predicted_ha']).corr(np.log(j['actual_ha']), method='spearman')}\n")
 f.close()
 
 fig, ax = plt.subplots(1,1,dpi=300, figsize=(15,7))
