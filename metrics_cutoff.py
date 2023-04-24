@@ -4,6 +4,8 @@ import pandas as pd
 import os
 import rioxarray as rxr
 import argparse
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--pred_dir", help="Preds Dir")
@@ -11,6 +13,7 @@ parser.add_argument("--csv", help="Path to ground truth CSV")
 parser.add_argument("--year", help="Year")
 parser.add_argument("--cluster", help="Cluster Number")
 parser.add_argument("--cutoff", help="Score cutoff")
+parser.add_argument("name", help="Name")
 
 args = parser.parse_args()
 
@@ -20,6 +23,7 @@ ground_truth_csv = "inputs/poppy_1994-2020.csv"
 year = "2020"
 poppy_cluster = 1
 cutoff = 0.7
+results_dir = "results/{args.label}"
 
 if args.pred_dir:
     scores_dir = args.pred_dir
@@ -63,7 +67,6 @@ for k in predictions:
 
 df = pd.DataFrame(df)
 df['distid'] = df['distid'].astype(int)
-print(df)
 
 
 gt = pd.read_csv(ground_truth_csv)
@@ -82,3 +85,14 @@ print("Log correlation (pearson)", np.log(j['predicted_ha']).corr(np.log(j['actu
 print("Correlation (spearman)", j['predicted_ha'].corr(j['actual_ha'], method="spearman"))
 print("Log correlation (spearman)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha']), method="spearman"))
 
+
+j.to_csv(f"{results_dir}/acreage.csv", index=False)
+
+fig, ax = plt.subplots(1,1,dpi=300, figsize=(15,7))
+sns.scatterplot(x=j['actual_ha'], y=j['predicted_ha'])
+X_plot = np.linspace(0, np.max(j['actual_ha']), 100)
+plt.plot(X_plot, X_plot, color='r')
+ax.set_xlabel("log(Actual Production (UNODC) in Hectares)")
+ax.set_ylabel("log(Predicted Production (k-Means) in Hectares)")
+plt.tight_layout()
+plt.savefig(f"{results_dir}/scatterplot.png")
