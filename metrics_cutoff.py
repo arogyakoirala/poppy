@@ -24,7 +24,7 @@ ground_truth_csv = "inputs/poppy_1994-2020.csv"
 year = "2020"
 poppy_cluster = 1
 cutoff = 0.7
-results_dir = f"results/{args.label}"
+results_dir = f"results/{args.name}"
 
 Path(results_dir).mkdir(exist_ok=True, parents=True)
 
