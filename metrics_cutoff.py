@@ -24,7 +24,7 @@ ground_truth_csv = "inputs/poppy_1994-2020.csv"
 year = "2020"
 poppy_cluster = 1
 cutoff = 0.7
-results_dir = "results/{args.label}"
+results_dir = f"results/{args.label}"
 
 Path(results_dir).mkdir(exist_ok=True, parents=True)
 
@@ -81,6 +81,7 @@ j = pd.merge(gt, df)
 j['year'] = year
 j['ratio'] = j['predicted_ha']/j['actual_ha']
 print(j.sort_values(by='actual_ha', ascending=False))
+j.to_csv(f"{results_dir}/acreage.csv", index=False)
 
 print("Correlation (pearson)", j['predicted_ha'].corr(j['actual_ha']))
 print("Log correlation (pearson)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha'])))
@@ -89,7 +90,12 @@ print("Correlation (spearman)", j['predicted_ha'].corr(j['actual_ha'], method="s
 print("Log correlation (spearman)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha']), method="spearman"))
 
 
-j.to_csv(f"{results_dir}/acreage.csv", index=False)
+f = open(f"{results_dir}/correlations.txt", "w")
+f.write(f"Correlation (pearson): {j['predicted_ha'].corr(j['actual_ha'])}\n")
+f.write(f"Log Correlation (pearson): {np.log(j['predicted_ha']).corr(np.log(j['actual_ha']))}\n")
+f.write(f"Correlation (spearman): {j['predicted_ha'].corr(j['actual_ha'], method="spearman")}\n")
+f.write(f"Log Correlation (spearman): {np.log(j['predicted_ha']).corr(np.log(j['actual_ha']), method="spearman")}\n")
+f.close()
 
 fig, ax = plt.subplots(1,1,dpi=300, figsize=(15,7))
 sns.scatterplot(x=j['actual_ha'], y=j['predicted_ha'])
