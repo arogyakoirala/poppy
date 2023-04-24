@@ -6,6 +6,7 @@ import rioxarray as rxr
 import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--pred_dir", help="Preds Dir")
@@ -24,6 +25,8 @@ year = "2020"
 poppy_cluster = 1
 cutoff = 0.7
 results_dir = "results/{args.label}"
+
+Path(results_dir).mkdir(exist_ok=True, parents=True)
 
 if args.pred_dir:
     scores_dir = args.pred_dir
