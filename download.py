@@ -32,7 +32,7 @@ if __name__ == '__main__':
     # Parameters (unexposed)
     _RESOLUTION_P = 2500
     _RESOLUTION_C = 250
-    _POST_PERIOD_DAYS = [25, 40]
+    _POST_PERIOD_DAYS = [30, 45]
 
     # Parameters (derived)
     _TILE_OUTPUT_DIR = f'{INTERIM_DIR}/tiles'

@@ -1,6 +1,6 @@
 .ipynb_checkpoints/
 __pycache__
-utils/__pycache__
+utils/__pycache__/
 
 outputs/
 out/
@@ -12,3 +12,4 @@ outputs/
 interim/
 logs/
 server/
+results.
