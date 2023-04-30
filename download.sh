@@ -1,5 +1,5 @@
 #!/bin/bash
-# conda activate poppy-linux
+conda activate poppy-linux
 
 # process='solo'
 # mask=""
