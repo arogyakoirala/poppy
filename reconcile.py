@@ -28,5 +28,5 @@ for t in tiles:
             print(f"No crop data for: {t}")
         continue
     else:
-        print(f"Couldn't find predictions for {t}")
+        print(f"Couldn't find downloads for {t}")
 
