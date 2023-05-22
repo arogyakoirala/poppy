@@ -49,7 +49,7 @@ if args.cutoff:
     cutoff = float(args.cutoff)
 
 folders = [f for f in os.listdir(preds_dir) if f not in '.DS_Store']
-
+print(f"Original number of folders: {len(folders)}" )
 
 subset_dict = {
     "2019_3": [2308,2302,2306,2304,2303,2407,2307,2311,1906,1905,2601,2312,2605,2105,1608,1606,2416,2313,1115,2604,2301,2205,2305,3106,2106,2111,2415,1607,1116,2706,809,2406,2408,2603,804,1711,2705],
@@ -59,8 +59,7 @@ subset_dict = {
 }
 
 folders = [f for f in folders if int(f.split("_")[0]) in subset_dict[subset] ]
-print("Subsets", folders)
-
+print(f"New number of folders: {len(folders)}")
 
 predictions= {}
 for folder in folders:
