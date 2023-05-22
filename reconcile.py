@@ -18,4 +18,4 @@ for t in tiles:
     if t in predictions:
         continue
     else:
-        print(f"Couldn't find predictions for {t} in {args.preds_dir}")
+        print(f"Couldn't find predictions for {t} in {args.pred_dir}")
