@@ -14,6 +14,7 @@ parser.add_argument("--csv", help="Path to ground truth CSV")
 parser.add_argument("--year", help="Year")
 parser.add_argument("--cluster", help="Cluster Number")
 parser.add_argument("--cutoff", help="Score cutoff")
+parser.add_argument("--subset", help="Subset")
 parser.add_argument("name", help="Name")
 
 args = parser.parse_args()
@@ -22,6 +23,7 @@ args = parser.parse_args()
 preds_dir = "server/2020_2/predictions"
 ground_truth_csv = "inputs/poppy_1994-2020.csv"
 year = "2020"
+subset="2019_3"
 poppy_cluster = 0
 cutoff = 0.7
 results_dir = f"results/{args.name}"
@@ -40,6 +42,9 @@ if args.year:
 if args.cluster:
     poppy_cluster = int(args.cluster)
 
+if args.subset:
+    subset = args.subset
+
 if args.cutoff:
     cutoff = float(args.cutoff)
 
@@ -53,7 +58,7 @@ subset_dict = {
     "2021_3": [2308,2302,2304,2309,2303,2311,2407,2307,2105,2312,2313,2106,2601,2605,1905,1906,2415,2305,2205,2604,1115,2301,2111,2306,2416,1904,3106,2405,2406,2705,2506,804,805,1607,2103,1608,1606,2403,1116]
 }
 
-subsets = [f for f in folders if int(f.split("_")[0]) in subset_dict["2019_3"] ]
+folders = [f for f in folders if int(f.split("_")[0]) in subset_dict[subset] ]
 print("Subsets", subsets)
 
 
