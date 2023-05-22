@@ -21,7 +21,7 @@ nocrops = []
 for t in tiles:
     if t in dloads:
         if ["NOCROP" in os.listdir(args.dload_dir + f"/{t}")]:
-            print(f"No crop data for: {t}")
+            # print(f"No crop data for: {t}")
             nocrops.append(t)
         continue
     else:
