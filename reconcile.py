@@ -16,17 +16,22 @@ dloads = [f.split(".gpkg")[0] for f in os.listdir(args.dload_dir)]
 if len(tiles) != len(predictions):
     print(f"Length Mismatch: {len(tiles)} (tiles) vs {len(predictions)} (predictions)")
 
-for t in tiles:
-    if t in predictions:
-        continue
-    else:
-        print(f"Couldn't find predictions for {t}")
 
+nocrops = []
 for t in tiles:
     if t in dloads:
         if ["NOCROP" in os.listdir(args.dload_dir + f"/{t}")]:
             print(f"No crop data for: {t}")
+            nocrops.append(t)
         continue
     else:
         print(f"Couldn't find downloads for {t}")
 
+
+
+for t in tiles:
+    if t in predictions:
+        continue
+    else:
+        if t not in nocrops:
+            print(f"Couldn't find predictions for {t}")
