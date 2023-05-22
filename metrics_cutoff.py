@@ -54,7 +54,7 @@ subset_dict = {
 }
 
 subsets = [f for f in folders if int(f.split("_")[0]) in subset_dict("2019_3") ]
-print("Subsets," subsets)
+print("Subsets", subsets)
 
 
 predictions= {}
