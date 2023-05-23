@@ -60,7 +60,7 @@ def clip(raster, shp, output):
     with rasterio.open(raster) as src:
         Vector=Vector.to_crs("epsg:4326")
         # print(Vector.crs)
-        out_image, out_transform=mask(src.read(poppy_cluster+1),Vector.geometry,crop=True, nodata=np.nan)
+        out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan, indexes=[1,2,3])
         out_meta=src.meta.copy() # copy the metadata of the source DEM
         
     out_meta.update({
@@ -102,7 +102,7 @@ Path("temp").mkdir(exist_ok=True, parents=True)
 predictions= {}
 for folder in folders:
     if folder.split("_")[0] in tighten:
-        print("Tightening for {folder}")
+        print(f"Tightening for {folder}")
         clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask80.gpkg", f"temp/{folder}.tif")
     else:
         shutil.copy(f'{preds_dir}/{folder}/scores.tif', f"temp/{folder}.tif")
@@ -111,10 +111,7 @@ for folder in folders:
 
 
     # r = rxr.open_rasterio()
-    if folder.split("_")[0] in tighten:
-        img = src.read(1).flatten()
-    else:
-        img = src.read(poppy_cluster+1).flatten()
+    img = src.read(poppy_cluster+1).flatten()
     poppy = (img > cutoff).sum() / 100.0
 
     print(folder, poppy)

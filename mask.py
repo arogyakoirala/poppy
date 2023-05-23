@@ -9,10 +9,10 @@ def clip(raster, shp, output):
 
 
     with rasterio.open(raster) as src:
-        print(src.crs)
+        # print(src.crs)
         Vector=Vector.to_crs("epsg:4326")
         # print(Vector.crs)
-        out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan)
+        out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan, indexes=[1,2,3])
         out_meta=src.meta.copy() # copy the metadata of the source DEM
         
     out_meta.update({
@@ -25,7 +25,7 @@ def clip(raster, shp, output):
     with rasterio.open(output,'w',**out_meta) as dst:
         dst.write(out_image)
 
-clip("server/2019-30day/predictions/r1/predictions.tif", "server/inputs/processed/afgmask85.gpkg", "output.tif")
+clip("server/2019-30day/predictions/r1/scores.tif", "server/inputs/processed/afgmask85.gpkg", "output.tif")
 
 
 
