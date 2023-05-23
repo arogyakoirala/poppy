@@ -79,7 +79,7 @@ def clip(raster, shp, output):
                 
     with rasterio.open(output,'w',**out_meta) as dst:
         for band_nr, src in enumerate(final, start=1):
-            dest.write(src, band_nr)
+            dst.write(src, band_nr)
         # dst.write(out_image)
 
 
