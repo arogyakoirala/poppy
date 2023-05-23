@@ -101,7 +101,7 @@ folders = [f for f in folders if int(f.split("_")[0]) in subset_dict[subset] ]
 print(f"New number of folders: {len(folders)}")
 
 
-tighten = ["1608"]
+tighten = ["1608", "1905"]
 
 if os.path.exists("temp"):
     shutil.rmtree("temp")
