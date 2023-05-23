@@ -92,7 +92,7 @@ folders = [f for f in folders if int(f.split("_")[0]) in subset_dict[subset] ]
 print(f"New number of folders: {len(folders)}")
 
 
-tighten = ["1905", "1903", "1904", "1608", "3106", "1607"]
+tighten = ["1905", "1903", "1904", "1608", "3106", "1607", "2106", "2205", "2308", "1606"]
 
 if os.path.exists("temp"):
     shutil.rmtree("temp")
