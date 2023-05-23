@@ -92,7 +92,7 @@ folders = [f for f in folders if int(f.split("_")[0]) in subset_dict[subset] ]
 print(f"New number of folders: {len(folders)}")
 
 
-tighten = ["1608", "1905", "2308"]
+tighten = ["1608", "1906"]
 
 if os.path.exists("temp"):
     shutil.rmtree("temp")
@@ -103,7 +103,7 @@ predictions= {}
 for folder in folders:
     if folder.split("_")[0] in tighten:
         print(f"Tightening for {folder}")
-        clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask65.gpkg", f"temp/{folder}.tif")
+        clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask75.gpkg", f"temp/{folder}.tif")
     else:
         shutil.copy(f'{preds_dir}/{folder}/scores.tif', f"temp/{folder}.tif")
     src = rasterio.open(f'temp/{folder}.tif')
