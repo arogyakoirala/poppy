@@ -100,7 +100,7 @@ Path("temp").mkdir(exist_ok=True, parents=True)
 
 predictions= {}
 for folder in folders:
-    clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask85.tif", "temp/scores.tif")
+    clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask85.gpkg", "temp/scores.tif")
 
     src = rasterio.open(f'temp/scores.tif')
     # src = rasterio.open(f'{preds_dir}/{folder}/scores.tif')
