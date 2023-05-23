@@ -60,27 +60,18 @@ def clip(raster, shp, output):
     with rasterio.open(raster) as src:
         Vector=Vector.to_crs("epsg:4326")
         # print(Vector.crs)
-        c1 = src.read(1)
-        c2 = src.read(2)
-        c3 = src.read(3)
-        all_rasters = [c1,c2,c3]
-
-        final = []
-        for rst in all_rasters:
-            out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan)
-            out_meta=src.meta.copy() # copy the metadata of the source DEM
-            final.append(rst)
-        out_meta.update({
-            "driver":"Gtiff",
-            "height":out_image.shape[1], # height starts with shape[1]
-            "width":out_image.shape[2], # width starts with shape[2]
-            "transform":out_transform
-        })
+        out_image, out_transform=mask(src.read(poppy_cluster+1),Vector.geometry,crop=True, nodata=np.nan)
+        out_meta=src.meta.copy() # copy the metadata of the source DEM
+        
+    out_meta.update({
+        "driver":"Gtiff",
+        "height":out_image.shape[1], # height starts with shape[1]
+        "width":out_image.shape[2], # width starts with shape[2]
+        "transform":out_transform
+    })
                 
     with rasterio.open(output,'w',**out_meta) as dst:
-        for band_nr, src in enumerate(final, start=1):
-            dst.write(src, band_nr)
-        # dst.write(out_image)
+        dst.write(out_image)
 
 
 
@@ -111,7 +102,7 @@ Path("temp").mkdir(exist_ok=True, parents=True)
 predictions= {}
 for folder in folders:
     if folder.split("_")[0] in tighten:
-        print(f"Tightening for {folder}")
+        print("Tightening for {folder}")
         clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask80.gpkg", f"temp/{folder}.tif")
     else:
         shutil.copy(f'{preds_dir}/{folder}/scores.tif', f"temp/{folder}.tif")
@@ -120,7 +111,10 @@ for folder in folders:
 
 
     # r = rxr.open_rasterio()
-    img = src.read(poppy_cluster+1).flatten()
+    if folder.split("_")[0] in tighten:
+        img = src.read(1).flatten()
+    else:
+        img = src.read(poppy_cluster+1).flatten()
     poppy = (img > cutoff).sum() / 100.0
 
     print(folder, poppy)
