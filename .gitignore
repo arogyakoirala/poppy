@@ -13,3 +13,5 @@ interim/
 logs/
 server/
 results.
+shapefiles/
+output.tif

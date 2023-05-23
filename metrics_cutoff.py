@@ -8,6 +8,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
 
+from rasterio.mask import mask
+import geopandas as gpd
+import shutil
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--pred_dir", help="Preds Dir")
 parser.add_argument("--csv", help="Path to ground truth CSV")
@@ -48,6 +52,32 @@ if args.subset:
 if args.cutoff:
     cutoff = float(args.cutoff)
 
+
+def clip(raster, shp, output):
+    Vector=gpd.read_file(shp)
+
+
+    with rasterio.open(raster) as src:
+        print(src.crs)
+        Vector=Vector.to_crs("epsg:4326")
+        # print(Vector.crs)
+        out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan)
+        out_meta=src.meta.copy() # copy the metadata of the source DEM
+        
+    out_meta.update({
+        "driver":"Gtiff",
+        "height":out_image.shape[1], # height starts with shape[1]
+        "width":out_image.shape[2], # width starts with shape[2]
+        "transform":out_transform
+    })
+                
+    with rasterio.open(output,'w',**out_meta) as dst:
+        dst.write(out_image)
+
+
+
+
+
 folders = [f for f in os.listdir(preds_dir) if f not in '.DS_Store']
 print(f"Original number of folders: {len(folders)}" )
 
@@ -62,9 +92,20 @@ subset_dict = {
 folders = [f for f in folders if int(f.split("_")[0]) in subset_dict[subset] ]
 print(f"New number of folders: {len(folders)}")
 
+
+if os.path.exists("temp"):
+    shutil.rmtree("temp")
+Path("temp").mkdir(exist_ok=True, parents=True)
+
+
 predictions= {}
 for folder in folders:
-    src = rasterio.open(f'{preds_dir}/{folder}/scores.tif')
+    clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask85.tif", "temp/scores.tif")
+
+    src = rasterio.open(f'temp/scores.tif')
+    # src = rasterio.open(f'{preds_dir}/{folder}/scores.tif')
+
+
     # r = rxr.open_rasterio()
     img = src.read(poppy_cluster+1).flatten()
     poppy = (img > cutoff).sum() / 100.0
