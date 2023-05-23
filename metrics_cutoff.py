@@ -101,11 +101,11 @@ Path("temp").mkdir(exist_ok=True, parents=True)
 
 predictions= {}
 for folder in folders:
-    if folder.split("_")[0] in tighten:
-        print(f"Tightening for {folder}")
-        clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask75.gpkg", f"temp/{folder}.tif")
-    else:
-        shutil.copy(f'{preds_dir}/{folder}/scores.tif', f"temp/{folder}.tif")
+    # if folder.split("_")[0] in tighten:
+    print(f"Tightening for {folder}")
+    clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask65.gpkg", f"temp/{folder}.tif")
+    # else:
+        # shutil.copy(f'{preds_dir}/{folder}/scores.tif', f"temp/{folder}.tif")
     src = rasterio.open(f'temp/{folder}.tif')
     # src = rasterio.open(f'{preds_dir}/{folder}/scores.tif')
 
