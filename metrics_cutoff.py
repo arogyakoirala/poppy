@@ -60,18 +60,27 @@ def clip(raster, shp, output):
     with rasterio.open(raster) as src:
         Vector=Vector.to_crs("epsg:4326")
         # print(Vector.crs)
-        out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan)
-        out_meta=src.meta.copy() # copy the metadata of the source DEM
-        
-    out_meta.update({
-        "driver":"Gtiff",
-        "height":out_image.shape[1], # height starts with shape[1]
-        "width":out_image.shape[2], # width starts with shape[2]
-        "transform":out_transform
-    })
+        c1 = src.read(1)
+        c2 = src.read(2)
+        c3 = src.read(3)
+        all_rasters = [c1,c2,c3]
+
+        final = []
+        for rst in all_rasters:
+            out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan)
+            out_meta=src.meta.copy() # copy the metadata of the source DEM
+            final.append(rst)
+        out_meta.update({
+            "driver":"Gtiff",
+            "height":out_image.shape[1], # height starts with shape[1]
+            "width":out_image.shape[2], # width starts with shape[2]
+            "transform":out_transform
+        })
                 
     with rasterio.open(output,'w',**out_meta) as dst:
-        dst.write(out_image)
+        for band_nr, src in enumerate(final, start=1):
+            dest.write(src, band_nr)
+        # dst.write(out_image)
 
 
 
