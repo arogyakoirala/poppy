@@ -58,7 +58,6 @@ def clip(raster, shp, output):
 
 
     with rasterio.open(raster) as src:
-        print(src.crs)
         Vector=Vector.to_crs("epsg:4326")
         # print(Vector.crs)
         out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan)
@@ -100,9 +99,9 @@ Path("temp").mkdir(exist_ok=True, parents=True)
 
 predictions= {}
 for folder in folders:
-    clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask85.gpkg", "temp/scores.tif")
+    clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask80.gpkg", f"temp/{folder}.tif")
 
-    src = rasterio.open(f'temp/scores.tif')
+    src = rasterio.open(f'temp/{folder}.tif')
     # src = rasterio.open(f'{preds_dir}/{folder}/scores.tif')
 
 
@@ -110,7 +109,7 @@ for folder in folders:
     img = src.read(poppy_cluster+1).flatten()
     poppy = (img > cutoff).sum() / 100.0
 
-    print(folder)
+    print(folder, poppy)
     dist_id = folder.split("_")[0]
     if dist_id in predictions:
             predictions[dist_id] += poppy
