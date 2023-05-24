@@ -148,12 +148,12 @@ j['ratio'] = j['predicted_ha']/j['actual_ha']
 print(j.sort_values(by='actual_ha', ascending=False))
 j.to_csv(f"{results_dir}/acreage.csv", index=False)
 
-print("Cutoff:", cutoff, "Mask:", mask, "Year:", year)
-print("Correlation (pearson)", j['predicted_ha'].corr(j['actual_ha']))
-print("Log correlation (pearson)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha'])))
+print("## Cutoff:", cutoff, "Mask:", mask, "Year:", year)
+print("## Correlation (pearson)", j['predicted_ha'].corr(j['actual_ha']))
+print("## Log correlation (pearson)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha'])))
 
-print("Correlation (spearman)", j['predicted_ha'].corr(j['actual_ha'], method="spearman"))
-print("Log correlation (spearman)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha']), method="spearman"))
+print("## Correlation (spearman)", j['predicted_ha'].corr(j['actual_ha'], method="spearman"))
+print("## Log correlation (spearman)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha']), method="spearman"))
 
 
 f = open(f"{results_dir}/correlations.txt", "w")
