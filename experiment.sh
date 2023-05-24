@@ -1,3 +1,7 @@
+#!/bin/bash
+
+source poppy-env/bin/activate
+
 declare -a Cutoffs=("0" "0.2" "0.4" "0.6" "0.8")
 declare -a Masks=("0" "60" "65" "70" "75" "80" "85" "90" "95")
 
