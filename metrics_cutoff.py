@@ -31,7 +31,7 @@ year = "2020"
 subset="2019_3"
 poppy_cluster = 0
 cutoff = 0
-mask = 0
+mask = "0"
 results_dir = f"results/{args.name}"
 
 Path(results_dir).mkdir(exist_ok=True, parents=True)
@@ -55,7 +55,7 @@ if args.cutoff:
     cutoff = float(args.cutoff)
 
 if args.mask:
-    mask = int(args.mask)
+    mask = args.mask
 
 
 def clip(raster, shp, output):
@@ -108,7 +108,7 @@ Path("temp").mkdir(exist_ok=True, parents=True)
 predictions= {}
 for folder in folders:
     # if folder.split("_")[0] in tighten:
-    if mask != 0:
+    if mask != "0":
         print(f"Tightening for {folder}")   
         clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask{mask}.gpkg", f"temp/{folder}.tif")
     else:
