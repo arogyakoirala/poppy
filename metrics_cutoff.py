@@ -19,6 +19,7 @@ parser.add_argument("--year", help="Year")
 parser.add_argument("--cluster", help="Cluster Number")
 parser.add_argument("--cutoff", help="Score cutoff")
 parser.add_argument("--subset", help="Subset")
+parser.add_argument("--mask", help="Mask")
 parser.add_argument("name", help="Name")
 
 args = parser.parse_args()
@@ -29,7 +30,8 @@ ground_truth_csv = "inputs/poppy_1994-2020.csv"
 year = "2020"
 subset="2019_3"
 poppy_cluster = 0
-cutoff = 0.7
+cutoff = 0
+mask = 0
 results_dir = f"results/{args.name}"
 
 Path(results_dir).mkdir(exist_ok=True, parents=True)
@@ -51,6 +53,9 @@ if args.subset:
 
 if args.cutoff:
     cutoff = float(args.cutoff)
+
+if args.mask:
+    mask = int(args.mask)
 
 
 def clip(raster, shp, output):
@@ -93,7 +98,7 @@ print(f"New number of folders: {len(folders)}")
 
 
 # tighten = ["1905", "1903", "1904", "1608", "3106", "1607", "2106", "2205", "2308", "1606"] // works for 2019
-tighten = ["1905", "1904", "3106", "1903", "1608", "1607", "1606", "1906", "2103"]
+# tighten = ["1905", "1904", "3106", "1903", "1608", "1607", "1606", "1906", "2103"]
 
 if os.path.exists("temp"):
     shutil.rmtree("temp")
@@ -102,9 +107,10 @@ Path("temp").mkdir(exist_ok=True, parents=True)
 
 predictions= {}
 for folder in folders:
-    if folder.split("_")[0] in tighten:
+    # if folder.split("_")[0] in tighten:
+    if mask != 0:
         print(f"Tightening for {folder}")   
-        clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask65.gpkg", f"temp/{folder}.tif")
+        clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask{mask}.gpkg", f"temp/{folder}.tif")
     else:
         shutil.copy(f'{preds_dir}/{folder}/scores.tif', f"temp/{folder}.tif")
     src = rasterio.open(f'temp/{folder}.tif')
