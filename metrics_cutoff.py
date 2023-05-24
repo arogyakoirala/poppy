@@ -106,7 +106,7 @@ predictions= {}
 for folder in folders:
     # if folder.split("_")[0] in tighten:
     if mask_perc != "0":
-        print(f"Applying {mak_perc}% crop mask for {folder}")   
+        print(f"Applying {mask_perc}% crop mask for {folder}")   
         clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask{mask_perc}.gpkg", f"temp/{folder}.tif")
     else:
         shutil.copy(f'{preds_dir}/{folder}/scores.tif', f"temp/{folder}.tif")
