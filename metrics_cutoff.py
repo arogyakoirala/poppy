@@ -105,7 +105,7 @@ Path("temp").mkdir(exist_ok=True, parents=True)
 predictions= {}
 for folder in folders:
     # if folder.split("_")[0] in tighten:
-    if mask != "0":
+    if mask_perc != "0":
         print(f"Tightening for {folder}")   
         print(mask_perc)
         clip(f'{preds_dir}/{folder}/scores.tif', f"inputs/afgmask{mask_perc}.gpkg", f"temp/{folder}.tif")
