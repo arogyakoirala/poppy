@@ -93,7 +93,7 @@ print(f"New number of folders: {len(folders)}")
 
 
 # tighten = ["1905", "1903", "1904", "1608", "3106", "1607", "2106", "2205", "2308", "1606"] // works for 2019
-tighten = ["1905", "1904", "3106"]
+tighten = ["1905", "1904", "3106", "1903", "1608", "1607"]
 
 if os.path.exists("temp"):
     shutil.rmtree("temp")
