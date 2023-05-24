@@ -151,10 +151,10 @@ j.to_csv(f"{results_dir}/acreage.csv", index=False)
 print("## Cutoff:", cutoff, "Mask:", mask_perc, "Year:", year)
 print("## Correlation (pearson)", j['predicted_ha'].corr(j['actual_ha']))
 print("## Log correlation (pearson)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha'])))
-
 print("## Correlation (spearman)", j['predicted_ha'].corr(j['actual_ha'], method="spearman"))
 print("## Log correlation (spearman)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha']), method="spearman"))
-
+print("##")
+print("##")
 
 f = open(f"{results_dir}/correlations.txt", "w")
 f.write(f"Correlation (pearson): {j['predicted_ha'].corr(j['actual_ha'])}\n")
