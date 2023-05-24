@@ -148,9 +148,7 @@ j['ratio'] = j['predicted_ha']/j['actual_ha']
 print(j.sort_values(by='actual_ha', ascending=False))
 j.to_csv(f"{results_dir}/acreage.csv", index=False)
 
-print("Cutoff:", cutoff)
-print("Mask:", mask)
-print("Year:", year)
+print("Cutoff:", cutoff, "Mask:", mask, "Year:", year)
 print("Correlation (pearson)", j['predicted_ha'].corr(j['actual_ha']))
 print("Log correlation (pearson)", np.log(j['predicted_ha']).corr(np.log(j['actual_ha'])))
 
