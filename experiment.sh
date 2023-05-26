@@ -2,8 +2,8 @@
 
 source poppy-env/bin/activate
 
-declare -a Cutoffs=("0" "0.2" "0.6")
-declare -a Masks=("60" "65" "70" "75" "80")
+declare -a Cutoffs=("0.6" "0.2" "0")
+declare -a Masks=("80" "75" "70" "65" "60")
 
 
 for cutoff in "${Cutoffs[@]}"; do
