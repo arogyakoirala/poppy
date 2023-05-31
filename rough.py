@@ -1,9 +1,34 @@
-districts = {
-"2019_3": [2308,2302,2306,2304,2303,2407,2307,2311,1906,1905,2601,2312,2605,2105,1608,1606,2416,2313,1115,2604,2301,2205,2305,3106,2106,2111,2415,1607,1116,2706,809,2406,2408,2603,804,2705],
-    "2019_2": [1103,2309,1903,1803,1904,2405,813,2102,905,805,1102,1124,2103,3404,1808,1907,2602,1015,2006,3101,1014,1703,1701,3102,1804,2404,3409,112,901,815,2505,2709,903,1302,2707,3402],
-    "2020_3": [2308,2302,2306,2304,1906,2303,2407,1905,2311,2307,1903,2601,2105,2312,2313,1904,1115,2416,2605,2205,2604,2106,1608,2305,2415,1606,3106,2111,1803,2705,2301,1607,805,1116,2603,2406,2309,2408,2103,2405],
-    "2021_3": [2308,2302,2304,2309,2303,2311,2407,2307,2105,2312,2313,2106,2601,2605,1905,1906,2415,2305,2205,2604,1115,2301,2111,2306,2416,1904,3106,2405,2406,2705,2506,804,805,1607,2103,1608,1606,2403,1116]
-}
+import rasterio
 
-print([i for i in districts['2020_3'] if i not in districts['2019_3']])
-print(set(districts['2020_3']) - set(districts['2019_3']))
+from rasterio.mask import mask
+import geopandas as gpd
+import shutil
+import numpy as np
+
+def clip(raster, shp, output):
+    Vector=gpd.read_file(shp)
+
+
+    with rasterio.open(raster) as src:
+        Vector=Vector.to_crs("epsg:4326")
+        # print(Vector.crs)
+        out_image, out_transform=mask(src,Vector.geometry,crop=True, nodata=np.nan, indexes=[1,2,3])
+        out_meta=src.meta.copy() # copy the metadata of the source DEM
+        
+    out_meta.update({
+        "driver":"Gtiff",
+        "height":out_image.shape[1], # height starts with shape[1]
+        "width":out_image.shape[2], # width starts with shape[2]
+        "transform":out_transform
+    })
+                
+    with rasterio.open(output,'w',**out_meta) as dst:
+        dst.write(out_image)
+
+
+
+in_file = "server/debug/2308_3/scores.tif"
+shp = "server/inputs/processed/afgmask60.gpkg"
+out = "masked.tif"
+
+clip(in_file, shp, out)
