@@ -45,7 +45,7 @@ for f in folders:
         print(f"Clipping {f}: Predictions")
         clip(f'{args.pred_dir}/{f}/predictions_{f}.tif', vector,f'{args.out_dir}/{f}/predictions.tif', [1])
     else:
-        print(f"No exist preds {f}")
+        print(f"No exist preds {f}", f'{args.pred_dir}/{f}/predictions_{f}.tif')
     
     if os.path.exists(f'{args.pred_dir}/{f}/scores.tif'):
         print(f"Clipping {f}: Scores")
