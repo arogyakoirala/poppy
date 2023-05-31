@@ -41,9 +41,9 @@ folders = filter(lambda f: f !='.DS_Store', folders)
 
 for f in folders:
     Path(f'{args.out_dir}/{f}').mkdir(exist_ok=True, parents=True)
-    if os.path.exists(f'{args.pred_dir}/{f}/predictions.tif'):
+    if os.path.exists(f'{args.pred_dir}/{f}/predictions_{f}.tif'):
         print(f"Clipping {f}: Predictions")
-        clip(f'{args.pred_dir}/{f}/predictions.tif', vector,f'{args.out_dir}/{f}/predictions.tif', [1])
+        clip(f'{args.pred_dir}/{f}/predictions_{f}.tif', vector,f'{args.out_dir}/{f}/predictions.tif', [1])
     else:
         print(f"No exist preds {f}")
     
