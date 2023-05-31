@@ -40,10 +40,20 @@ folders = filter(lambda f: f !='.DS_Store', folders)
 
 for f in folders:
     Path(f'{args.out_dir}/{f}').mkdir(exist_ok=True, parents=True)
-    print(f"Clipping {f}: Predictions")
-    clip(f'{args.pred_dir}/{f}/predictions.tif', args.mask_shp,f'{args.out_dir}/{f}/predictions.tif', [1])
-    print(f"Clipping {f}: Scores")
-    clip(f'{args.pred_dir}/{f}/scores.tif', args.mask_shp,f'{args.out_dir}/{f}/scores.tif', [1,2,3])
-    print(f"Clipping {f}: Distances")
-    clip(f'{args.pred_dir}/{f}/distances.tif', args.mask_shp,f'{args.out_dir}/{f}/distances.tif', [1,2,3])
+    if os.path.exists(f'{args.pred_dir}/{f}/predictions.tif'):
+        print(f"Clipping {f}: Predictions")
+        clip(f'{args.pred_dir}/{f}/predictions.tif', args.mask_shp,f'{args.out_dir}/{f}/predictions.tif', [1])
+    else:
+        print(f"No exist preds {f}")
+    
+    if os.path.exists(f'{args.pred_dir}/{f}/scores.tif'):
+        print(f"Clipping {f}: Scores")
+        clip(f'{args.pred_dir}/{f}/scores.tif', args.mask_shp,f'{args.out_dir}/{f}/scores.tif', [1,2,3])
+    else:
+        print(f"No exist scores {f}")
 
+    if os.path.exists(f'{args.pred_dir}/{f}/distances.tif'):
+        print(f"Clipping {f}: Distances")
+        clip(f'{args.pred_dir}/{f}/distances.tif', args.mask_shp,f'{args.out_dir}/{f}/distances.tif', [1,2,3])
+    else:
+        print(f"No exist dists {f}")
