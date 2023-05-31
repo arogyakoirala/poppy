@@ -13,15 +13,16 @@ parser.add_argument("out_dir", help="Out Dir")
 parser.add_argument("mask_shp", help="Mask SHP")
 
 args = parser.parse_args()
+vector=gpd.read_file(args.mask_shp)
+vector=vector.to_crs("epsg:4326")
 
 def clip(raster, shp, output, indices):
-    vector=gpd.read_file(shp)
 
 
     with rasterio.open(raster) as src:
-        vector=vector.to_crs("epsg:4326")
         # print(vector.crs)
-        out_image, out_transform=mask(src,vector.geometry,crop=True, nodata=np.nan, indexes=indices)
+
+        out_image, out_transform=mask(src,shp.geometry,crop=True, nodata=np.nan, indexes=indices)
         out_meta=src.meta.copy() # copy the metadata of the source DEM
         
     out_meta.update({
@@ -42,18 +43,18 @@ for f in folders:
     Path(f'{args.out_dir}/{f}').mkdir(exist_ok=True, parents=True)
     if os.path.exists(f'{args.pred_dir}/{f}/predictions.tif'):
         print(f"Clipping {f}: Predictions")
-        clip(f'{args.pred_dir}/{f}/predictions.tif', args.mask_shp,f'{args.out_dir}/{f}/predictions.tif', [1])
+        clip(f'{args.pred_dir}/{f}/predictions.tif', vector,f'{args.out_dir}/{f}/predictions.tif', [1])
     else:
         print(f"No exist preds {f}")
     
     if os.path.exists(f'{args.pred_dir}/{f}/scores.tif'):
         print(f"Clipping {f}: Scores")
-        clip(f'{args.pred_dir}/{f}/scores.tif', args.mask_shp,f'{args.out_dir}/{f}/scores.tif', [1,2,3])
+        clip(f'{args.pred_dir}/{f}/scores.tif', vector,f'{args.out_dir}/{f}/scores.tif', [1,2,3])
     else:
         print(f"No exist scores {f}")
 
     if os.path.exists(f'{args.pred_dir}/{f}/distances.tif'):
         print(f"Clipping {f}: Distances")
-        clip(f'{args.pred_dir}/{f}/distances.tif', args.mask_shp,f'{args.out_dir}/{f}/distances.tif', [1,2,3])
+        clip(f'{args.pred_dir}/{f}/distances.tif', vector,f'{args.out_dir}/{f}/distances.tif', [1,2,3])
     else:
         print(f"No exist dists {f}")
