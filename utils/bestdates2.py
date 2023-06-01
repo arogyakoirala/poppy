@@ -230,6 +230,8 @@ class DatesHelper:
         child = child[['index', 'BSD', 'geometry']]
         child.columns = ['grid_id', 'BSD', 'geometry']
 
+        child.to_file(f"{self.data_dir}/child_non_modal.gpkg")
+
 
         if mask_tif is  None:
             print('Mask file missing')
