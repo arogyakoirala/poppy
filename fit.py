@@ -249,7 +249,7 @@ def save_plots(predictions, name):
         ax[i].hist(data, bins=100)
         ax[i].set_title(f"k={N}; cluster={i}")
         print(data)
-        print(type(data))
+        print("Type", type(data))
         data.to_csv(f'{IMGDIR}/{name}_cluster{i}.csv')
         print(f'Saved CSV to: {IMGDIR}/{name}_cluster{i}.csv')
     plt.tight_layout()
