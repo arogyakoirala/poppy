@@ -249,6 +249,7 @@ def save_plots(predictions, name):
         ax[i].hist(data, bins=100)
         ax[i].set_title(f"k={N}; cluster={i}")
         data.to_csv(f'{IMGDIR}/{name}_cluster{i}.csv')
+        print(f'Saved CSV to: {IMGDIR}/{name}_cluster{i}.csv')
     plt.tight_layout()
     plt.savefig(f'{IMGDIR}/{name}_ndvi.png')
 
