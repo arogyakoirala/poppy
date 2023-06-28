@@ -125,7 +125,9 @@ def prep_data(clipped):
     df = df[df['ndvi_pre'] > NDVI_CUTOFF]
     ndvis = df.reset_index()['ndvi_pre'] # save pre ndvis for future plotting
 
+    
     df = apply_transform(df)
+
     unqualified = apply_transform(unqualified)
     # # Apply required data transformation
     # if TRANSFORM == 'diff_bands':
@@ -184,7 +186,6 @@ def predict_k_means(df, model, scaler, unqualified):
     RESULTS = pd.DataFrame(RESULTS, columns = ['y','x','ndvi','cluster', "dist_centroid_0", "dist_centroid_1", "dist_centroid_2", "score_centroid_0",  "score_centroid_1",  "score_centroid_2"])
     RESULTS = RESULTS.drop_duplicates(subset=['y', 'x'])
     RESULTS = RESULTS.sort_values(['y', 'x'], ascending=False)
-
 
     return RESULTS
 
@@ -273,6 +274,11 @@ for shp in shps:
     else:
         predictions = predict_k_means(prediction_ready_data, model, scaler, unqualified)
         predictions['ndvi'] = ndvis
+
+        print(shp)
+        fname = shp.split(".gpkg")[0]
+        predictions.to_csv(f"{ODIR}/{fname}.csv")
+
         save_tifs_pred(predictions, shp.split(".gpkg")[0], clipped.rio.crs)
         save_plots(predictions, shp.split(".gpkg")[0])
         save_tables(predictions, shp.split(".gpkg")[0])

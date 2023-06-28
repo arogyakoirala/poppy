@@ -1,5 +1,5 @@
 #!/bin/bash
-conda activate poppy-linux
+source poppy-env/bin/activate
 
 # process='solo'
 # mask=""
