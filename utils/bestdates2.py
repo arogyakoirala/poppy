@@ -138,6 +138,8 @@ class DatesHelper:
         if os.path.exists(f"{MODIS_DIR}/interim/centroids.gpkg"):
             os.remove(f"{MODIS_DIR}/interim/centroids.gpkg")
 
+
+        print(os.listdir(MODIS_DIR))
         # Merge downloaded modis tiles into one
         os.system(f'find {TILE_DIR}  -maxdepth 1 -name "*.tif" -print0 | xargs -0 gdalbuildvrt -srcnodata "0" {MODIS_DIR}/temp.vrt')
         os.system(f'gdal_merge.py -o {MODIS_DIR}/merged.tif {MODIS_DIR}/temp.vrt')
