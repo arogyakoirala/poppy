@@ -19,20 +19,22 @@ do
 done
 
 
-# echo "shp = $shp"
-# echo "out = $out"
-# echo "cores = $cores"
-# echo "mask = $mask"
-# echo "year = $year"
+echo "shp = $shp"
+echo "out = $out"
+echo "cores = $cores"
+echo "mask = $mask"
+echo "year = $year"
 
-# echo "interim = $interim"
+echo "interim = $interim"
 
 
 
 
 out_dir=$out/out
 interim_dir=$out/interim
-mkdir -p $logs
+
+
+
 
 
 
@@ -53,6 +55,15 @@ else
         odir="${out_dir}/${base}"
         logfile="${logs}/download-${base}.txt"
         
+
+        echo "shp = $shp/$base.gpkg"
+        echo "mask = $mask"
+        echo "year = $year"
+
+        echo "out_dir = $odir"
+        echo "interim_dir = $idir"
+
+
         # Download
         echo Started process for $base.gpkg. Writing logfile to: $logfile
         python -u download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year > $logfile &
