@@ -329,7 +329,7 @@ class MergeRasterSingleAoi:
             os.remove(f"{self.data_dir}/{filename}.tif")
 
         raw = [f"{temp_dir}/{f}" for f in os.listdir(temp_dir) if ".tif" in f]
-        vrt_options = gdal.BuildVRTOptions(resampleAlg='cubic', addAlpha=True, srcNoData="0")
+        vrt_options = gdal.BuildVRTOptions(resampleAlg='cubic', addAlpha=True, srcNodata=None)
         gdal.BuildVRT(f'{self.data_dir}/{filename}.vrt', raw, options=vrt_options)
             
         # os.system(f'gdalbuildvrt {self.data_dir}/{filename}.vrt {temp_dir}/*.tif -srcnodata None')
