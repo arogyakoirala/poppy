@@ -106,10 +106,11 @@ else
         base=${base%.*}
         idir="${interim_dir}/${base}"
         odir="${out_dir}/${base}"
-        logfile="${logs}/download-${base}.txt"
+        logfile="${logs}/download-${base}-recheck.txt"
         
         # Download
         echo STARTED RECHECK AND CLEAN for $base.gpkg. Writing logfile to: $logfile
+
         python download.py --shp $shp/$base.gpkg --mask $mask --out_dir $odir --interim_dir $idir --n_cores 1  --year $year > $logfile &
 
     done
