@@ -23,8 +23,7 @@ from shapely.geometry import mapping, shape
 
 from osgeo import gdal
 
-vrt_options = gdal.BuildVRTOptions(resampleAlg='cubic', addAlpha=True)
-gdal.BuildVRT('my.vrt', ['one.tif', 'two.tif'], options=vrt_options)
+
 
 ee.Initialize()
 
