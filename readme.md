@@ -2,6 +2,19 @@
 
 This respository contains code that uses unsupervised learning techniques on Google Earth Imagery to predict poppy cultivation in Afghanistan. Using ground truth data from UNODC it then calculates correlations and SSEs between ground truth and predicted values.
 
+
+## Project outputs: 
+
+Raster files for estimated areas of poppy cultivation in have been uploaded as assets on Google Earth Engine:
+
+1. [2019 Rasters](https://code.earthengine.google.com/?asset=projects/ee-xhtai/assets/6-2-23poppyRaster_2019)
+2. [2020 Rasters](https://code.earthengine.google.com/?asset=projects/ee-xhtai/assets/6-2-23poppyRaster_2020)
+3. [2021 Rasters](https://code.earthengine.google.com/?asset=projects/ee-xhtai/assets/6-2-23poppyRaster_2021)
+
+GEE scripts for socioeconomic analysis can be found here:
+1. [Healthcare accessiblity analysis](https://code.earthengine.google.com/f71ae4f4b71beaf98e4e1e03869762a9?noload=true)
+2. [Education accessibility analysis](https://code.earthengine.google.com/ea1691bbe436151b03cd6aee8458ca3a?noload=true)
+
 # Installation
 
 Follow these steps to setup your environment. 
