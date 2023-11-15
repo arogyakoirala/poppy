@@ -54,17 +54,43 @@ This will explode all the individual polygons in the `districts.gpkg` into their
 python split.py inputs/districts.gpkg inputs/districts_exploded
 ```
 
+#### Arguments
+
+```
+  positional arguments:
+  shp         SHP  Path to district shapefile in GPKG format
+  out_dir     Out  Directory where individual shapefiles for each polygon within the district shapefile are to be stored
+  
+  optional arguments:
+  -h, --help  show this help message and exit
+```
+
 ### Tile exploded shapefiles into individual tiled shapefiles at specified resolution using `tile.py`
 
 The next step is to tile individual geopackaged district level shapefiles into tiles of a specified resolution (in meters). We will stored tiled shapefiles in the `inputs/districts_tiled` folder.
 
 > For this tutorial, we only want to focus on districts 2308 and 2416, corresponding to Nad Ali and Qandahar respectively. Let's specify this using the `--subset` optional parameter. Not using the `--subset` parameter will generate tiles for all shapefiles present in the `inputs/district_exploded` folder. The `--subset` parameter can take in the following three inputs for now: `nadali_qandahar` (districts 2308 and 2416), and `hfp` (high frequency poppy districts, i.e. districts 1606, 1607, 1608, 1905, 1906, 2105, 2106, 2111, 2302, 2303, 2304, 2306, 2307, 2308, 2311, 2312, 2407, 2416, 2601, 2605).  
 
-> Similarly, we can also customise the resolution of the tiled shapefile using the optional `--resolution` parameter. For now we will use 10000 meters as our resolution. The default value is 50000 meters. 
+> Similarly, we can also customise the resolution of the tiled shapefile using the optional `--resolution` parameter. For now we will use 10000 meters squared as our resolution. The default value is 50000 meters squared. 
 
 ```
 python tile.py inputs/districts_exploded inputs/districts_tiled --subset nadali_qandahar --resolution 10000
 ```
+
+#### Arguments
+
+```
+positional arguments:
+  shp                   SHP Path to folder containing candidate shapefiles for which to generate tiles
+  out_dir               Out Directory where tiled shapefiles are to be stored
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --resolution RESOLUTION
+                        Resolution (in meters squared; defaults to 50000
+  --subset SUBSET       Subset Specify subset to be used 
+```
+
 
 ## Download data from GEE
 We are now ready to download data for the tiled shapefiles in `inputs/districts_tiled` from Google Earth Engine. We will store this data in the `interim/rasters/modal2019` directory.
@@ -99,15 +125,28 @@ Since we are dealing with multiple shapefiles, we are going to use mode='multi'.
 
 Time to actually fit the clustering model using `fit.py`
 
-We are going to fit the model on regions defined by shapefiles present in the `inputs/model_aois/` directory, which pertains to two specific regions within Nad Ali and Qandahar where we know poppy is being grown.
+We are going to fit the model on regions defined by shapefiles present in the `inputs/model_aois/r1_r2` directory, which pertains to two specific regions within Nad Ali and Qandahar where we know poppy is being grown.
 
 We also have to tell the script where the rasters are (that would be `interim/rasters`) and where we want the final model to be stored (let's set this to `outputs/model` directory). Finally let's give the model run a name using the optional `--name` parameter, by default this is set to `""`.
 
 ```
-python fit.py inputs/model_aois data/rasters outputs/models --name nadali-qandahar
+python fit.py inputs/model_aois interim/rasters/modal2019 outputs/models --name nadali-qandahar
 ```
 
-### Notes
+#### Arguments
+
+```
+positional arguments:
+  shp          Directory containing shapefiles for regions of interest from which to use data for model fitting
+  rasters_dir  Directory where rasters have been downloaded from the download step 
+  out_dir      Directory where the output model and its metrics will be stored
+
+optional arguments:
+  -h, --help   show this help message and exit
+  --name  An optional name given to the model
+```
+
+#### Notes
 
 You can safely ignore the following error for now
 
@@ -126,9 +165,21 @@ IndexError: band index 16 out of range (not in (1, 2, 3, 4))
 Let's use the fitted model for making predictions for all shapefiles in `inputs/districts_tiled` folder. This will allow us to generate numbers at a district level.
 
 ```
-python predict.py inputs/districts_tiled outputs/models/kmeans-3-nadali-qandahar interim/rasters outputs/predictions/nadali-qandahar
+python predict.py inputs/districts_tiled outputs/models/kmeans-3-nadali-qandahar interim/rasters/modal2019 outputs/predictions/nadali-qandahar
 ```
 
+#### Arguments
+
+```
+positional arguments:
+  shp          Directory containing shapefiles for which predictions are to be generated (note that rasters for these shapefiles must have been downloaded in the download step)
+  model_dir    Directory where the model to be used for fitting data is stored
+  rasters_dir  Directory where rasters have been downloaded from the download step 
+  out_dir      Directory where model predictions will be stored
+
+optional arguments:
+  -h, --help   show this help message and exit
+```
 
 # Troubleshooting
 
