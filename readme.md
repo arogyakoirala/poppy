@@ -2,8 +2,20 @@
 
 This respository contains code that uses unsupervised learning techniques on Google Earth Imagery to predict poppy cultivation in Afghanistan. Using ground truth data from UNODC it then calculates correlations and SSEs between ground truth and predicted values.
 
+## Table of Contents
+- [Project outputs](#project-outputs)
+- [Installation](#installation)
+- [Tutorial](#tutorial)
+   * [1. Data preparation](#1-data-preparation)
+      + [1.1 Generate individual district level shapefiles using `split.py`](#11-generate-individual-district-level-shapefiles-using-splitpy)
+      + [1.2 Tile exploded shapefiles into individual tiled shapefiles at specified resolution using `tile.py`](#12-tile-exploded-shapefiles-into-individual-tiled-shapefiles-at-specified-resolution-using-tilepy)
+   * [2. Download data from GEE](#2-download-data-from-gee)
+   * [3. Fit model](#3-fit-model)
+   * [4. Generate predictions using model](#4-generate-predictions-using-model)
+- [Troubleshooting](#troubleshooting)
 
-## Project outputs: 
+
+# Project outputs 
 
 Raster files for estimated areas of poppy cultivation in have been uploaded as assets on Google Earth Engine:
 
@@ -28,7 +40,7 @@ Follow these steps to setup your environment.
 
 # Tutorial
 
-## Data preparation
+## 1. Data preparation
 
 Create a folder called `inputs` inside your project directory and download and extract the contents of [this zip file](https://www.dropbox.com/s/uhxwmudndulwb0l/poppy.zip?dl=0) into it.
 
@@ -46,7 +58,7 @@ This will populate the `inputs` directory with the following:
 4. `poppy_1994-2020.csv`: Ground truth CSV from UNODC. We will use this to compare results.
 
 
-### Generate individual district level shapefiles using `split.py`
+### 1.1 Generate individual district level shapefiles using `split.py`
 
 This will explode all the individual polygons in the `districts.gpkg` into their own corresponding shapefiles. We will have to specify the folder where we want to store this. Let's go ahead and store these in `inputs/districts_exploded`
 
@@ -65,7 +77,7 @@ python split.py inputs/districts.gpkg inputs/districts_exploded
   -h, --help  show this help message and exit
 ```
 
-### Tile exploded shapefiles into individual tiled shapefiles at specified resolution using `tile.py`
+### 1.2 Tile exploded shapefiles into individual tiled shapefiles at specified resolution using `tile.py`
 
 The next step is to tile individual geopackaged district level shapefiles into tiles of a specified resolution (in meters). We will stored tiled shapefiles in the `inputs/districts_tiled` folder.
 
@@ -92,7 +104,7 @@ optional arguments:
 ```
 
 
-## Download data from GEE
+## 2. Download data from GEE
 We are now ready to download data for the tiled shapefiles in `inputs/districts_tiled` from Google Earth Engine. We will store this data in the `interim/rasters/modal2019` directory.
 
 For this we will use `download.sh`
@@ -121,7 +133,7 @@ Since we are dealing with multiple shapefiles, we are going to use mode='multi'.
 > ```
 > You can monitor the status of each individual tile by revieing logfiles present in the `interim/logs/` directory
 
-## Fit model
+## 3. Fit model
 
 Time to actually fit the clustering model using `fit.py`
 
@@ -160,7 +172,7 @@ Traceback (most recent call last):
 IndexError: band index 16 out of range (not in (1, 2, 3, 4))
 ```
 
-## Generate predictions using model
+## 4. Generate predictions using model
 
 Let's use the fitted model for making predictions for all shapefiles in `inputs/districts_tiled` folder. This will allow us to generate numbers at a district level.
 
