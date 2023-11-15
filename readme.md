@@ -66,7 +66,7 @@ This will explode all the individual polygons in the `districts.gpkg` into their
 python split.py inputs/districts.gpkg inputs/districts_exploded
 ```
 
-#### Arguments
+#### Arguments for `split.py`
 
 ```
   positional arguments:
@@ -89,7 +89,7 @@ The next step is to tile individual geopackaged district level shapefiles into t
 python tile.py inputs/districts_exploded inputs/districts_tiled --subset nadali_qandahar --resolution 10000
 ```
 
-#### Arguments
+#### Arguments for `tile.py`
 
 ```
 positional arguments:
@@ -113,7 +113,8 @@ For this we will use `download.sh`
 ./download.sh year=2019 mode=multi shp=inputs/districts_tiled mask=inputs/mask.tif out=interim/rasters/modal2019 logs=interim/logs cores=2
 ```
 
-**Notes on `download.sh`**: This script is capable of parallelly downloading rasters from GEE (specied through the `--cores` parameter) and takes in the following parameters.
+#### Arguments for `download.sh`
+This script is capable of parallelly downloading rasters from GEE (specied through the `--cores` parameter) and takes in the following arguments.
 
 - `year`: The year for which to download the imagery
 - `mode`: Can be one of 'multi' (for parallelized downloading) or 'solo' if we are only working with one shapefile.
@@ -145,7 +146,7 @@ We also have to tell the script where the rasters are (that would be `interim/ra
 python fit.py inputs/model_aois interim/rasters/modal2019 outputs/models --name nadali-qandahar
 ```
 
-#### Arguments
+#### Arguments for `fit.py`
 
 ```
 positional arguments:
@@ -180,7 +181,7 @@ Let's use the fitted model for making predictions for all shapefiles in `inputs/
 python predict.py inputs/districts_tiled outputs/models/kmeans-3-nadali-qandahar interim/rasters/modal2019 outputs/predictions/nadali-qandahar
 ```
 
-#### Arguments
+#### Arguments for `predict.py`
 
 ```
 positional arguments:
