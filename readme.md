@@ -24,8 +24,8 @@ Raster files for estimated areas of poppy cultivation in have been uploaded as a
 3. [2021 Rasters](https://code.earthengine.google.com/?asset=projects/ee-xhtai/assets/6-2-23poppyRaster_2021)
 
 GEE scripts for socioeconomic analysis can be found here:
-1. [Healthcare accessiblity analysis](https://code.earthengine.google.com/f71ae4f4b71beaf98e4e1e03869762a9?noload=true)
-2. [Education accessibility analysis](https://code.earthengine.google.com/ea1691bbe436151b03cd6aee8458ca3a?noload=true)
+1. [Healthcare accessiblity analysis](https://code.earthengine.google.com/6a1bee76116ef8bd0d38695461d8a209?noload=true)
+2. [Education analysis](https://code.earthengine.google.com/d3abae4e8797f80c32d0ed9b7022f81f?noload=true)
 
 # Installation
 
